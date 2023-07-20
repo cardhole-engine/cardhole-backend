@@ -9,5 +9,4 @@ public class CardholeBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CardholeBackendApplication.class, args);
 	}
-
 }
