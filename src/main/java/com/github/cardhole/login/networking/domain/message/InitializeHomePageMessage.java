@@ -11,10 +11,6 @@ public record InitializeHomePageMessage(
         List<RunningGame> games
 ) implements Message {
 
-    public String type() {
-        return "InitializeHomePage";
-    }
-
     @Builder
     public record RunningGame(
 

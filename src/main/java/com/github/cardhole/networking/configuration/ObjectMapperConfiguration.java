@@ -20,7 +20,7 @@ public class ObjectMapperConfiguration {
         objectMapper.addMixIn(Message.class, MessageTypeMixIn.class);
         objectMapper.registerSubtypes(
                 messageTypeRegisters.stream()
-                        .map(messageTypeRegister -> new NamedType(messageTypeRegister.domainClass(), messageTypeRegister.type()))
+                        .map(messageTypeRegister -> new NamedType(messageTypeRegister.domainClass(), messageTypeRegister.domainClass().getSimpleName()))
                         .toList()
                         .toArray(NamedType[]::new)
         );

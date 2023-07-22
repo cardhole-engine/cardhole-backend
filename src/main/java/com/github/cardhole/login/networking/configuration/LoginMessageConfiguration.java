@@ -11,7 +11,6 @@ public class LoginMessageConfiguration {
     @Bean
     public MessageTypeRegister loginMessageTypeRegister() {
         return MessageTypeRegister.builder()
-                .type("LOGIN_MESSAGE")
                 .domainClass(LoginMessage.class)
                 .build();
     }
