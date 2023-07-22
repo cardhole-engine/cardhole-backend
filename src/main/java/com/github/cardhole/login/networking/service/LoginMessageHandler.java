@@ -1,16 +1,31 @@
 package com.github.cardhole.login.networking.service;
 
+import com.github.cardhole.login.networking.domain.message.InitializeHomePageMessage;
 import com.github.cardhole.login.networking.domain.message.LoginMessage;
 import com.github.cardhole.networking.domain.MessageHandler;
+import com.github.cardhole.networking.domain.Session;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
+
+import java.util.List;
 
 @Service
 public class LoginMessageHandler implements MessageHandler<LoginMessage> {
 
     @Override
-    public void handleMessage(final WebSocketSession webSocketSession, final LoginMessage message) {
-
+    public void handleMessage(final Session session, final LoginMessage message) {
+        session.sendMessage(
+                InitializeHomePageMessage.builder()
+                        .games(
+                                List.of(
+                                        InitializeHomePageMessage.RunningGame.builder()
+                                                .name("testgame")
+                                                .actualPlayers(1)
+                                                .maximumPlayers(2)
+                                                .build()
+                                )
+                        )
+                        .build()
+        );
     }
 
     @Override

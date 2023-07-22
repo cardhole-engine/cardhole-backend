@@ -15,6 +15,7 @@ public record InitializeHomePageMessage(
         return "InitializeHomePage";
     }
 
+    @Builder
     public record RunningGame(
 
             String name,

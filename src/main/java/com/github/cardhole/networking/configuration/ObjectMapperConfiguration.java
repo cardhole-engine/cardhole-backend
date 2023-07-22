@@ -14,7 +14,7 @@ import java.util.List;
 public class ObjectMapperConfiguration {
 
     @Bean
-    public ObjectMapper messageDeserializerObjectMapper(final List<MessageTypeRegister> messageTypeRegisters) {
+    public ObjectMapper objectMapper(final List<MessageTypeRegister> messageTypeRegisters) {
         final ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.addMixIn(Message.class, MessageTypeMixIn.class);
@@ -29,6 +29,6 @@ public class ObjectMapperConfiguration {
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
-    public abstract class MessageTypeMixIn {
+    public abstract static class MessageTypeMixIn {
     }
 }

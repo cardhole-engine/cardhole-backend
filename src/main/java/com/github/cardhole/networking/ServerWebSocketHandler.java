@@ -3,6 +3,7 @@ package com.github.cardhole.networking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.networking.domain.MessageHandler;
+import com.github.cardhole.networking.domain.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,14 +27,14 @@ import java.util.stream.Collectors;
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable {
 
-    private final ObjectMapper messageDeserializerObjectMapper;
+    private final ObjectMapper objectMapper;
     private final Map<Class, MessageHandler> messageHandlers;
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
-    public ServerWebSocketHandler(final ObjectMapper messageDeserializerObjectMapper,
+    public ServerWebSocketHandler(final ObjectMapper objectMapper,
                                   final List<MessageHandler<?>> messageHandlers) {
-        this.messageDeserializerObjectMapper = messageDeserializerObjectMapper;
+        this.objectMapper = objectMapper;
         this.messageHandlers = messageHandlers.stream()
                 .collect(Collectors.toMap(MessageHandler::supportedMessage, Function.identity()));
     }
@@ -55,6 +56,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
 
     @Scheduled(fixedRate = 10000)
     void sendPeriodicMessages() throws IOException {
+        //TODO: Send heartbeat/ping or something similar here
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
                 String broadcast = "server periodic message " + LocalTime.now();
@@ -66,12 +68,17 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
 
     @Override
     public void handleTextMessage(final WebSocketSession session, final TextMessage textMessage) throws Exception {
-        final Message message = messageDeserializerObjectMapper.readValue(textMessage.getPayload(), Message.class);
+        final Message message = objectMapper.readValue(textMessage.getPayload(), Message.class);
 
         log.info("Got message: {}", message);
 
-        messageHandlers.get(message.getClass()).handleMessage(session, message);
-        //session.sendMessage(new TextMessage(response));
+        messageHandlers.get(message.getClass()).handleMessage(
+                Session.builder()
+                        .webSocketSession(session)
+                        .objectMapper(objectMapper)
+                        .build(),
+                message
+        );
     }
 
     @Override
