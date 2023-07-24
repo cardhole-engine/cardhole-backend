@@ -14,12 +14,10 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,41 +27,45 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
 
     private final ObjectMapper objectMapper;
     private final Map<Class, MessageHandler> messageHandlers;
-
-    private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
+    private final Map<WebSocketSession, Session> sessions;
 
     public ServerWebSocketHandler(final ObjectMapper objectMapper,
                                   final List<MessageHandler<?>> messageHandlers) {
         this.objectMapper = objectMapper;
         this.messageHandlers = messageHandlers.stream()
                 .collect(Collectors.toMap(MessageHandler::supportedMessage, Function.identity()));
+        this.sessions = new HashMap<>();
     }
 
     @Override
-    public void afterConnectionEstablished(final WebSocketSession session) throws Exception {
-        log.info("Server connection opened");
-        sessions.add(session);
-        TextMessage message = new TextMessage("one-time message from server");
-        log.info("Server sends: {}", message);
-        session.sendMessage(message);
+    public void afterConnectionEstablished(final WebSocketSession session) {
+        log.info("Server connection opened!");
+
+        sessions.put(session,
+                Session.builder()
+                        .webSocketSession(session)
+                        .objectMapper(objectMapper)
+                        .build()
+        );
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        log.info("Server connection closed: {}", status);
+    public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
+        log.info("Server connection closed: {}.", status);
+
         sessions.remove(session);
     }
 
     @Scheduled(fixedRate = 10000)
     void sendPeriodicMessages() throws IOException {
         //TODO: Send heartbeat/ping or something similar here
-        for (WebSocketSession session : sessions) {
-            if (session.isOpen()) {
-                String broadcast = "server periodic message " + LocalTime.now();
-                log.info("Server sends: {}", broadcast);
-                session.sendMessage(new TextMessage(broadcast));
-            }
-        }
+        //for (WebSocketSession session : sessions) {
+            //if (session.isOpen()) {
+                //String broadcast = "server periodic message " + LocalTime.now();
+                //log.info("Server sends: {}", broadcast);
+                //session.sendMessage(new TextMessage(broadcast));
+            //}
+        //}
     }
 
     @Override
@@ -72,13 +74,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
 
         log.info("Got message: {}", message);
 
-        messageHandlers.get(message.getClass()).handleMessage(
-                Session.builder()
-                        .webSocketSession(session)
-                        .objectMapper(objectMapper)
-                        .build(),
-                message
-        );
+        messageHandlers.get(message.getClass()).handleMessage(sessions.get(session), message);
     }
 
     @Override
