@@ -1,8 +1,11 @@
 package com.github.cardhole.networking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.cardhole.game.service.container.GameRegistry;
+import com.github.cardhole.home.service.HomeRefresherService;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.networking.domain.MessageHandler;
+import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.service.SessionRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,14 +28,20 @@ import java.util.stream.Collectors;
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable {
 
     private final ObjectMapper objectMapper;
+    private final GameRegistry gameRegistry;
     private final SessionRegistry sessionRegistry;
+    private final HomeRefresherService homeRefresherService;
     private final Map<Class, MessageHandler> messageHandlers;
 
     public ServerWebSocketHandler(final ObjectMapper objectMapper,
+                                  final GameRegistry gameRegistry,
                                   final SessionRegistry sessionRegistry,
+                                  final HomeRefresherService homeRefresherService,
                                   final List<MessageHandler<?>> messageHandlers) {
         this.objectMapper = objectMapper;
+        this.gameRegistry = gameRegistry;
         this.sessionRegistry = sessionRegistry;
+        this.homeRefresherService = homeRefresherService;
         this.messageHandlers = messageHandlers.stream()
                 .collect(Collectors.toMap(MessageHandler::supportedMessage, Function.identity()));
     }
@@ -47,6 +56,25 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
         log.info("Server connection closed: {}.", status);
+
+        this.gameRegistry.listGames().stream()
+                .filter(game -> game.getPlayers().stream()
+                        .anyMatch(player -> player.getSession().equals(sessionRegistry.getSession(session))))
+                .findFirst()
+                .ifPresent(game -> {
+                    final Player player = game.getPlayers().stream()
+                            .filter(player1 -> player1.getSession().equals(sessionRegistry.getSession(session)))
+                            .findFirst()
+                            .orElseThrow();
+
+                    game.getPlayers().remove(player);
+
+                    if (game.getPlayerCount() == 0) {
+                        this.gameRegistry.removeGame(game);
+                    }
+
+                    homeRefresherService.refreshHomeForSessions();
+                });
 
         sessionRegistry.removeSession(session);
     }

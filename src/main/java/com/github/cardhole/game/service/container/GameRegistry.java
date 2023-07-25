@@ -17,8 +17,10 @@ public class GameRegistry {
 
     public void registerGame(final Game game) {
         games.put(game.getId(), game);
+    }
 
-        //TODO: Refresh the games in the lobby for everyone there
+    public void removeGame(final Game game) {
+        games.remove(game.getId());
     }
 
     public List<Game> listGames() {
