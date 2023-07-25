@@ -1,8 +1,8 @@
-package com.github.cardhole.login.networking.domain.message;
+package com.github.cardhole.game.networking.create.domain;
 
 import com.github.cardhole.networking.domain.Message;
 
-public record LoginMessage(
+public record CreateGameIncomingMessage(
 
         String type,
         String name

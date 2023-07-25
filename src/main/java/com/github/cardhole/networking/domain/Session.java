@@ -2,6 +2,7 @@ package com.github.cardhole.networking.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,7 +16,11 @@ public class Session {
     private final ObjectMapper objectMapper;
     private final WebSocketSession webSocketSession;
 
-    private boolean inGame = false;
+    @Getter
+    private boolean inGame;
+
+    @Getter
+    private String name;
 
     public void sendMessage(final Message message) {
         try {

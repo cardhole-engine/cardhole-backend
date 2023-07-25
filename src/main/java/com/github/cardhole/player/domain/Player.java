@@ -7,4 +7,8 @@ import lombok.RequiredArgsConstructor;
 public class Player {
 
     private final Session session;
+
+    public String getName() {
+        return session.getName();
+    }
 }

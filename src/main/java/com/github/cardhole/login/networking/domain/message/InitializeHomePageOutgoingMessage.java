@@ -4,9 +4,10 @@ import com.github.cardhole.networking.domain.Message;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.UUID;
 
 @Builder
-public record InitializeHomePageMessage(
+public record InitializeHomePageOutgoingMessage(
 
         List<RunningGame> games
 ) implements Message {
@@ -14,6 +15,7 @@ public record InitializeHomePageMessage(
     @Builder
     public record RunningGame(
 
+            UUID id,
             String name,
             int actualPlayers,
             int maximumPlayers

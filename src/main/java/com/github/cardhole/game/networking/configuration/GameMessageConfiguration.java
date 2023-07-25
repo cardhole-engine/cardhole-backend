@@ -1,6 +1,7 @@
 package com.github.cardhole.game.networking.configuration;
 
-import com.github.cardhole.game.networking.create.domain.CreateGameMessage;
+import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
+import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessage;
 import com.github.cardhole.networking.domain.MessageTypeRegister;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +10,16 @@ import org.springframework.context.annotation.Configuration;
 public class GameMessageConfiguration {
 
     @Bean
-    public MessageTypeRegister createGameMessageTypeRegister() {
+    public MessageTypeRegister createGameIncomingMessageTypeRegister() {
         return MessageTypeRegister.builder()
-                .domainClass(CreateGameMessage.class)
+                .domainClass(CreateGameIncomingMessage.class)
+                .build();
+    }
+
+    @Bean
+    public MessageTypeRegister requestJoinIncomingMessageTypeRegister() {
+        return MessageTypeRegister.builder()
+                .domainClass(RequestJoinIncomingMessage.class)
                 .build();
     }
 }

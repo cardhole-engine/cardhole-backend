@@ -1,8 +1,8 @@
 package com.github.cardhole.login.networking.service;
 
 import com.github.cardhole.game.service.container.GameContainer;
-import com.github.cardhole.login.networking.domain.message.InitializeHomePageMessage;
-import com.github.cardhole.login.networking.domain.message.LoginMessage;
+import com.github.cardhole.login.networking.domain.message.InitializeHomePageOutgoingMessage;
+import com.github.cardhole.login.networking.domain.message.LoginIncomingMessage;
 import com.github.cardhole.networking.domain.MessageHandler;
 import com.github.cardhole.networking.domain.Session;
 import lombok.RequiredArgsConstructor;
@@ -10,17 +10,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LoginMessageHandler implements MessageHandler<LoginMessage> {
+public class LoginMessageHandler implements MessageHandler<LoginIncomingMessage> {
 
     private final GameContainer gameContainer;
 
     @Override
-    public void handleMessage(final Session session, final LoginMessage message) {
+    public void handleMessage(final Session session, final LoginIncomingMessage message) {
+        session.setName(message.name());
+
         session.sendMessage(
-                InitializeHomePageMessage.builder()
+                InitializeHomePageOutgoingMessage.builder()
                         .games(
                                 gameContainer.listGames().stream()
-                                        .map(game -> InitializeHomePageMessage.RunningGame.builder()
+                                        .map(game -> InitializeHomePageOutgoingMessage.RunningGame.builder()
+                                                .id(game.getId())
                                                 .name(game.getName())
                                                 .actualPlayers(game.getPlayerCount())
                                                 .maximumPlayers(2)
@@ -33,7 +36,7 @@ public class LoginMessageHandler implements MessageHandler<LoginMessage> {
     }
 
     @Override
-    public Class<LoginMessage> supportedMessage() {
-        return LoginMessage.class;
+    public Class<LoginIncomingMessage> supportedMessage() {
+        return LoginIncomingMessage.class;
     }
 }
