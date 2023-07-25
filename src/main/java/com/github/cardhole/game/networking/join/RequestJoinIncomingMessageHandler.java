@@ -6,6 +6,7 @@ import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessag
 import com.github.cardhole.game.service.container.GameContainer;
 import com.github.cardhole.networking.domain.MessageHandler;
 import com.github.cardhole.networking.domain.Session;
+import com.github.cardhole.player.domain.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
         if (!gameToJoin.hasSpaceForNewJoiner()) {
             //TODO: Failed join response
         }
+
+        //TODO: Refresh for the other player
+        gameToJoin.getPlayers().add(new Player(session));
 
         session.setInGame(true);
         session.sendMessage(
