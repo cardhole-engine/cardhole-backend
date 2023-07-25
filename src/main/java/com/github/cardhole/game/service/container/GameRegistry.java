@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class GameContainer {
+public class GameRegistry {
 
     private final Map<UUID, Game> games = new HashMap<>();
 

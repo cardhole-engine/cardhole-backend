@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
-public record InitializeHomePageOutgoingMessage(
+public record RefreshHomePageOutgoingMessage(
 
         List<RunningGame> games
 ) implements Message {
