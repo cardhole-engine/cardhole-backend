@@ -14,6 +14,7 @@ public class HomeRefresherService {
     private final GameRegistry gameRegistry;
     private final SessionRegistry sessionRegistry;
 
+    //TODO: Split this up! Dont always resend the whole home screen data!
     public void refreshHomeForSessions() {
         sessionRegistry.listSessions()
                 .forEach(this::refreshHomeForSession);
