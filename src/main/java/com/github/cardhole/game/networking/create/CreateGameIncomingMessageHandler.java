@@ -32,6 +32,7 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
                                 List.of(
                                         JoinGameOutgoingMessage.Player.builder()
                                                 .name(session.getName())
+                                                .myPlayer(true)
                                                 .build()
                                 )
                         )

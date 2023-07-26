@@ -14,7 +14,8 @@ public record JoinGameOutgoingMessage(
 
     @Builder
     public record Player(
-            String name
+            String name,
+            boolean myPlayer
     ) {
     }
 }

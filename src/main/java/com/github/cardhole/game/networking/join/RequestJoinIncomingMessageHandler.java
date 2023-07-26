@@ -46,6 +46,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
                                 gameToJoin.getPlayers().stream()
                                         .map(player -> JoinGameOutgoingMessage.Player.builder()
                                                 .name(player.getName())
+                                                .myPlayer(player.getSession().equals(session))
                                                 .build()
                                         )
                                         .toList()
