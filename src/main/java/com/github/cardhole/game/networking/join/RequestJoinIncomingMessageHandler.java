@@ -1,5 +1,6 @@
 package com.github.cardhole.game.networking.join;
 
+import com.github.cardhole.deck.service.RandomDeckFactory;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.join.domain.JoinGameOutgoingMessage;
@@ -23,6 +24,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
 
     private final GameManager gameManager;
     private final GameRegistry gameRegistry;
+    private final RandomDeckFactory randomDeckFactory;
     private final HomeRefresherService homeRefresherService;
     private final GameNetworkingManipulator gameNetworkingManipulator;
 
@@ -41,7 +43,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
         }
 
         // Initialize the screen for the joined player
-        final Player joiningPlayer = new Player(session);
+        final Player joiningPlayer = new Player(session, randomDeckFactory.buildRandomDeck(), 20);
 
         gameToJoin.joinPlayer(joiningPlayer);
 

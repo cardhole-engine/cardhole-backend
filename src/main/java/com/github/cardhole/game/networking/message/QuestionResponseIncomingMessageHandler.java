@@ -7,6 +7,7 @@ import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomi
 import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.MessageHandler;
 import com.github.cardhole.player.domain.Player;
+import com.github.cardhole.random.service.RandomCalculator;
 import com.github.cardhole.session.domain.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class QuestionResponseIncomingMessageHandler implements MessageHandler<QuestionResponseIncomingMessage> {
 
     private final GameRegistry gameRegistry;
+    private final RandomCalculator randomCalculator;
     private final GameNetworkingManipulator gameNetworkingManipulator;
 
     @Override
@@ -39,7 +41,6 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName()
                         + " will go first.");
 
-                //TODO: Calculate starting deck for now
                 //TODO: Draw cards to everyone
                 //TODO: Ask for mulligan
                 break;
@@ -60,7 +61,6 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + opponent.getName()
                         + " will go first.");
 
-                //TODO: Calculate starting deck for now
                 //TODO: Draw cards to everyone
                 //TODO: Ask for mulligan
                 break;

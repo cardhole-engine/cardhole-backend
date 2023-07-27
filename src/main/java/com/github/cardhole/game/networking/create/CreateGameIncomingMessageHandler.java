@@ -1,5 +1,6 @@
 package com.github.cardhole.game.networking.create;
 
+import com.github.cardhole.deck.service.RandomDeckFactory;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.JoinGameOutgoingMessage;
@@ -18,11 +19,12 @@ import java.util.List;
 public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGameIncomingMessage> {
 
     private final GameRegistry gameRegistry;
+    private final RandomDeckFactory randomDeckFactory;
     private final HomeRefresherService homeRefresherService;
 
     @Override
     public void handleMessage(final Session session, final CreateGameIncomingMessage message) {
-        final Game newGame = new Game(message.name(), new Player(session));
+        final Game newGame = new Game(message.name(), new Player(session, randomDeckFactory.buildRandomDeck(), 20));
 
         gameRegistry.registerGame(newGame);
 
