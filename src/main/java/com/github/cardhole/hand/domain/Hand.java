@@ -20,4 +20,12 @@ public class Hand {
     public int getCardCount() {
         return handEntries.size();
     }
+
+    public List<HandEntry> getCards() {
+        return handEntries;
+    }
+
+    public void resetHand() {
+        handEntries.clear();
+    }
 }

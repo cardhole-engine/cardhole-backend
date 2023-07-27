@@ -2,16 +2,25 @@ package com.github.cardhole.game.networking;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
+import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
 import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
+import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.player.domain.Player;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
+@RequiredArgsConstructor
 public class GameNetworkingManipulator {
+
+    private final GameRegistry gameRegistry;
 
     public void broadcastMessage(final Game game, final String message) {
         sendToEveryone(game,
@@ -51,17 +60,57 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastPlayerHandSize(final Game game, final Player player) {
+    public void sendRemoveCardFromPlayerHand(final Player player, final UUID cardId) {
+        player.getSession().sendMessage(
+                RemoveCardFromHandOutgoingMessage.builder()
+                        .id(cardId)
+                        .build()
+        );
+    }
+
+    /**
+     * Sends a player's hand size to every participant in the game.
+     *
+     * @param player the player to update the hand size for
+     */
+    public void broadcastPlayerHandSize(final Player player) {
+        final Game game = gameRegistry.getGame(player.getGameId())
+                .orElseThrow();
+
         sendToEveryone(game,
                 HandSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
-                        .handSize(player.getCardCountInDeck())
+                        .handSize(player.getCardCountInHand())
+                        .build()
+        );
+    }
+
+    /**
+     * Sends a player's deck size to every participant in the game.
+     *
+     * @param player the player to update the deck size for
+     */
+    public void broadcastPlayerDeckSize(final Player player) {
+        final Game game = gameRegistry.getGame(player.getGameId())
+                .orElseThrow();
+
+        sendToEveryone(game,
+                DeckSizeChangeOutgoingMessage.builder()
+                        .playerId(player.getId())
+                        .deckSize(player.getCardCountInHand())
                         .build()
         );
     }
 
     public void resetGameMessageForEveryone(final Game game) {
         sendToEveryone(game,
+                ResetMessageOutgoingMessage.builder()
+                        .build()
+        );
+    }
+
+    public void resetGameMessageForPlayer(final Player player) {
+        player.getSession().sendMessage(
                 ResetMessageOutgoingMessage.builder()
                         .build()
         );

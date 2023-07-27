@@ -22,4 +22,8 @@ public class Deck {
     public Class<? extends Card> drawCard() {
         return deckEntries.remove(randomCalculator.randomIntBetween(0, deckEntries.size() - 1)).getCard();
     }
+
+    public void addCard(final Class<? extends Card> card) {
+        deckEntries.add(new DeckEntry(card));
+    }
 }

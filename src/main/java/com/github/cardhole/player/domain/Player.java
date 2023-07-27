@@ -3,9 +3,11 @@ package com.github.cardhole.player.domain;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.hand.domain.Hand;
+import com.github.cardhole.hand.domain.HandEntry;
 import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
@@ -19,12 +21,21 @@ public class Player {
     private final UUID id;
     @Getter
     private final Session session;
-
-    private final Deck deck;
+    @Getter
     private final Hand hand;
+    @Getter
+    private final Deck deck;
 
     @Getter
     private int life;
+
+    @Getter
+    @Setter
+    private boolean waitingForMulliganReply;
+
+    @Getter
+    @Setter
+    private int mulliganCount;
 
     public Player(final Session session, final Deck deck, final int life) {
         this.id = UUID.randomUUID();
@@ -38,6 +49,11 @@ public class Player {
         return session.getName();
     }
 
+    public UUID getGameId() {
+        return session.getActiveGameId()
+                .orElseThrow(); // Unlike sessions, players shouldn't exist without a game
+    }
+
     public int getCardCountInDeck() {
         return deck.getCardCount();
     }
@@ -48,6 +64,26 @@ public class Player {
 
     public void drawCard() {
         drawCards(1);
+    }
+
+    /**
+     * Shuffles the users hand back into it's deck and returning the removed card's ids.
+     *
+     * @return the cards ids from the hand that were shuffled back
+     */
+    public List<UUID> shuffleHandBackToDeck() {
+        final List<UUID> removedCardIds = hand.getCards().stream()
+                .map(HandEntry::getCard)
+                .map(card -> {
+                    deck.addCard(card.getClass());
+
+                    return card.getId();
+                })
+                .toList();
+
+        hand.resetHand();
+
+        return removedCardIds;
     }
 
     public List<Card> drawCards(final int amount) {
