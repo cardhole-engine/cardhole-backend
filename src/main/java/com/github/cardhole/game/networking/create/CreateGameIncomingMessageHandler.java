@@ -22,9 +22,11 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
 
     @Override
     public void handleMessage(final Session session, final CreateGameIncomingMessage message) {
-        gameRegistry.registerGame(new Game(message.name(), new Player(session)));
+        final Game newGame = new Game(message.name(), new Player(session));
 
-        session.setInGame(true);
+        gameRegistry.registerGame(newGame);
+
+        session.setActiveGameId(newGame.getId());
         session.sendMessage(
                 JoinGameOutgoingMessage.builder()
                         .name(message.name())
