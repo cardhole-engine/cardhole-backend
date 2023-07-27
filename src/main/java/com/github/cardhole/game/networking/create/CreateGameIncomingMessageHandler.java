@@ -24,7 +24,8 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
 
     @Override
     public void handleMessage(final Session session, final CreateGameIncomingMessage message) {
-        final Game newGame = new Game(message.name(), new Player(session, randomDeckFactory.buildRandomDeck(), 20));
+        final Player newPlayer = new Player(session, randomDeckFactory.buildRandomDeck(), 20);
+        final Game newGame = new Game(message.name(), newPlayer);
 
         gameRegistry.registerGame(newGame);
 
@@ -35,8 +36,11 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
                         .players(
                                 List.of(
                                         JoinGameOutgoingMessage.Player.builder()
+                                                .id(newPlayer.getId())
                                                 .name(session.getName())
                                                 .myPlayer(true)
+                                                .deckSize(newPlayer.getCardCountInDeck())
+                                                .life(newPlayer.getLife())
                                                 .build()
                                 )
                         )

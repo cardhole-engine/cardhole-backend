@@ -1,5 +1,7 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.game.domain.Game;
+
 import java.util.UUID;
 
 public interface Card {
@@ -14,4 +16,6 @@ public interface Card {
     Set getSet();
 
     int getSetId();
+
+    boolean canBeCast(Game game);
 }

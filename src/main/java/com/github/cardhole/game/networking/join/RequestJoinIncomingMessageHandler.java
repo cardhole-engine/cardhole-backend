@@ -54,8 +54,12 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
                         .players(
                                 gameToJoin.getPlayers().stream()
                                         .map(player -> JoinGameOutgoingMessage.Player.builder()
+                                                .id(player.getId())
+                                                .name(session.getName())
                                                 .name(player.getName())
                                                 .myPlayer(player.getSession().equals(session))
+                                                .deckSize(player.getCardCountInDeck())
+                                                .life(player.getLife())
                                                 .build()
                                         )
                                         .toList()
@@ -68,7 +72,10 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
                 "Player " + session.getName() + " joined the game!");
         gameNetworkingManipulator.sendToEveryoneExceptTo(gameToJoin, joiningPlayer,
                 PlayerJoinedOutgoingMessage.builder()
+                        .id(joiningPlayer.getId())
                         .name(session.getName())
+                        .deckSize(joiningPlayer.getCardCountInDeck())
+                        .life(joiningPlayer.getLife())
                         .build()
         );
 

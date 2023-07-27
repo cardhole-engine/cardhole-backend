@@ -4,6 +4,7 @@ import com.github.cardhole.networking.domain.Message;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 public record JoinGameOutgoingMessage(
@@ -14,7 +15,10 @@ public record JoinGameOutgoingMessage(
 
     @Builder
     public record Player(
+            UUID id,
             String name,
+            int deckSize,
+            int life,
             boolean myPlayer
     ) {
     }

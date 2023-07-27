@@ -5,16 +5,22 @@ import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class Player {
 
+    @Getter
+    private final UUID id;
+    @Getter
     private final Session session;
     private final Deck deck;
 
+    @Getter
     private int life;
 
     public Player(final Session session, final Deck deck, final int life) {
+        this.id = UUID.randomUUID();
         this.session = session;
         this.deck = deck;
         this.life = life;
