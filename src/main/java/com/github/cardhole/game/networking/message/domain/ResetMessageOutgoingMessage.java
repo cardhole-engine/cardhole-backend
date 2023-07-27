@@ -4,8 +4,7 @@ import com.github.cardhole.networking.domain.Message;
 import lombok.Builder;
 
 @Builder
-public record ShowSimpleGameMessage(
+public record ResetMessageOutgoingMessage(
 
-        String message
 ) implements Message {
 }

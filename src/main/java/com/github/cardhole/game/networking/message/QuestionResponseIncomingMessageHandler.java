@@ -1,23 +1,26 @@
 package com.github.cardhole.game.networking.message;
 
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.domain.CheatingException;
 import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomingMessage;
+import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.MessageHandler;
 import com.github.cardhole.player.domain.Player;
-import com.github.cardhole.random.service.RandomCalculator;
 import com.github.cardhole.session.domain.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionResponseIncomingMessageHandler implements MessageHandler<QuestionResponseIncomingMessage> {
 
+    private final GameManager gameManager;
     private final GameRegistry gameRegistry;
-    private final RandomCalculator randomCalculator;
     private final GameNetworkingManipulator gameNetworkingManipulator;
 
     @Override
@@ -38,10 +41,11 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 game.setActivePlayer(player);
                 game.resetStartingPlayer();
 
+                gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName()
                         + " will go first.");
 
-                //TODO: Draw cards to everyone
+                gameManager.beginningDraw(game);
                 //TODO: Ask for mulligan
                 break;
             case "GO_SECOND":
@@ -58,10 +62,11 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 game.setActivePlayer(opponent);
                 game.resetStartingPlayer();
 
+                gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + opponent.getName()
                         + " will go first.");
 
-                //TODO: Draw cards to everyone
+                gameManager.beginningDraw(game);
                 //TODO: Ask for mulligan
                 break;
         }

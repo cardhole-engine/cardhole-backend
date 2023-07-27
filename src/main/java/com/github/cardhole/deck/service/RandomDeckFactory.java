@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -27,8 +29,8 @@ public class RandomDeckFactory {
         final List<DeckEntry> deckEntries = IntStream.range(0, 60)
                 .mapToObj(__ -> randomCalculator.randomEntryFromList(possibleCards))
                 .map(DeckEntry::new)
-                .toList();
+                .collect(Collectors.toCollection(LinkedList::new));
 
-        return new Deck(deckEntries);
+        return new Deck(deckEntries, randomCalculator);
     }
 }

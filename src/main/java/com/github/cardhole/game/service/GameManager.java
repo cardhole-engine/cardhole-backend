@@ -1,14 +1,17 @@
 package com.github.cardhole.game.service;
 
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
-import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessage;
-import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessage;
+import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
+import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 //TODO: Such an useless name! Come up with something better!
 @Service
@@ -34,7 +37,7 @@ public class GameManager {
         game.setStartingPlayer(winnerPlayer);
 
         winnerPlayer.getSession().sendMessage(
-                ShowDualQuestionGameMessage.builder()
+                ShowDualQuestionGameMessageOutgoingMessage.builder()
                         .question("Do you want to go first?")
                         .buttonOneText("Yes")
                         .buttonTwoText("No")
@@ -44,10 +47,22 @@ public class GameManager {
         );
 
         gameNetworkingManipulator.sendToEveryoneExceptTo(game, winnerPlayer,
-                ShowSimpleGameMessage.builder()
+                ShowSimpleGameMessageOutgoingMessage.builder()
                         .message("Waiting for the winner player to decide who go first.")
                         .build()
         );
+    }
+
+    public void beginningDraw(final Game game) {
+        game.getPlayers()
+                .forEach(drawingPlayer -> {
+                    final List<Card> drawnCard = drawingPlayer.drawCards(7);
+
+                    drawnCard.forEach(card -> gameNetworkingManipulator
+                            .sendNewCardToPlayerHand(drawingPlayer, card));
+
+                    gameNetworkingManipulator.broadcastPlayerHandSize(game, drawingPlayer);
+                });
     }
 
     public Player rollUntilWinner(final Game game) {

@@ -4,7 +4,7 @@ import com.github.cardhole.networking.domain.Message;
 import lombok.Builder;
 
 @Builder
-public record ShowDualQuestionGameMessage(
+public record ShowDualQuestionGameMessageOutgoingMessage(
 
         String question,
         String buttonOneText,
