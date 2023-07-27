@@ -20,7 +20,12 @@ public class Game {
 
     private GameStatus status;
     private Player startingPlayer;
+
+    private int turn;
+    private Step step;
+
     private Player activePlayer;
+    private List<Player> phasePriority;
 
     public Game(final String name, final Player owner) {
         this.id = UUID.randomUUID();
@@ -56,5 +61,13 @@ public class Game {
         return this.players.stream()
                 .filter(player -> player.getSession().equals(session))
                 .findFirst();
+    }
+
+    public Player getPriorityPlayer() {
+        return phasePriority.get(0);
+    }
+
+    public void movePriority() {
+        phasePriority.remove(0);
     }
 }

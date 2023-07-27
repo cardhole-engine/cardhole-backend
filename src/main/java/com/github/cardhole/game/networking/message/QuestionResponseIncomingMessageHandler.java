@@ -30,56 +30,44 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 .orElseThrow();
 
         switch (message.response()) {
-            case "GO_FIRST":
+            case "GO_FIRST" -> {
                 if (!game.isStartingPlayer(player)) {
                     throw new CheatingException("Player " + player.getName() + " tried to decide who go firs while its"
                             + " not his responsability!");
                 }
-
                 game.setActivePlayer(player);
                 game.resetStartingPlayer();
-
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName()
                         + " will go first.");
-
                 gameManager.drawForEveryoneInGame(game, 7);
                 gameManager.initializeMulliganForPlayersInGame(game);
-                break;
-            case "GO_SECOND":
+            }
+            case "GO_SECOND" -> {
                 if (!game.isStartingPlayer(player)) {
                     throw new CheatingException("Player " + player.getName() + " tried to decide who go firs while its"
                             + " not his responsability!");
                 }
-
                 final Player opponent = game.getPlayers().stream()
                         .filter(player1 -> !player1.equals(player))
                         .findFirst()
                         .orElseThrow();
-
                 game.setActivePlayer(opponent);
                 game.resetStartingPlayer();
-
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + opponent.getName()
                         + " will go first.");
-
                 gameManager.drawForEveryoneInGame(game, 7);
                 gameManager.initializeMulliganForPlayersInGame(game);
-                break;
-            case "YES_MULLIGAN":
+            }
+            case "YES_MULLIGAN" -> {
                 if (player.getMulliganCount() == 6) {
                     throw new CheatingException("Player tries to mulligan when he shouldn't be!");
                 }
-
                 gameNetworkingManipulator.broadcastMessage(game, player.getName() + " mulligan his hand!");
-
                 gameManager.shuffleHandBackToDeck(player);
-
                 player.setMulliganCount(player.getMulliganCount() + 1);
-
                 gameManager.drawForPlayer(player, 7 - player.getMulliganCount());
-
                 if (player.getMulliganCount() < 6) {
                     player.getSession().sendMessage(
                             ShowDualQuestionGameMessageOutgoingMessage.builder()
@@ -95,10 +83,9 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
 
                     gameManager.finishMulliganForPlayer(player);
                 }
-                break;
-            case "NO_MULLIGAN":
-                gameManager.finishMulliganForPlayer(player);
-                break;
+            }
+            case "NO_MULLIGAN" -> gameManager.finishMulliganForPlayer(player);
+            case "PASS_PRIORITY" -> gameManager.movePriority(game);
         }
     }
 
