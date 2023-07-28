@@ -6,7 +6,7 @@ import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
-import com.github.cardhole.game.networking.message.domain.ShowOkGameMessageOutgoingMessage;
+import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.player.domain.Player;
@@ -137,8 +137,21 @@ public class GameManager {
         if (game.getStep() == null) {
             game.setTurn(1);
             game.setStep(Step.UNTAP);
-        }
+        } else if (game.getStep() == Step.UNTAP) {
+            game.setStep(Step.UPKEEP);
+        } else if (game.getStep() == Step.UPKEEP) {
+            game.setStep(Step.DRAW);
+        } else if (game.getStep() == Step.DRAW) {
 
+        }
+        //TODO: Add further steps
+
+        gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
+
+        processStep(game);
+    }
+
+    public void processStep(final Game game) {
         switch (game.getStep()) {
             case UNTAP -> {
                 /*
@@ -167,6 +180,8 @@ public class GameManager {
                  *          the upkeep step. (See rule 503, “Upkeep Step.”)
                  */
                 //TODO: Logic to untap everyting
+
+                moveToNextStep(game);
             }
             case UPKEEP -> {
                 /*
@@ -181,6 +196,19 @@ public class GameManager {
                  *          has multiple upkeep steps, that spell may be cast any time after the first upkeep step ends.
                  */
                 //TODO: Upkeep logic here
+
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case DRAW -> {
+                /*
+                 * 504. Draw Step
+                 *    - 504.1. First, the active player draws a card. This turn-based action doesn’t use the stack.
+                 *    - 504.2. Second, the active player gets priority. (See rule 117, “Timing and Priority.”)
+                 */
+                if (!(game.getTurn() == 1 && game.getActivePlayer() == game.getStartingPlayer())) {
+                    game.getActivePlayer().drawCard();
+                }
 
                 initializePhasePriority(game);
                 broadcastPriority(game);
@@ -217,13 +245,14 @@ public class GameManager {
      * @param game the game to upgrade the priority for
      */
     public void movePriority(final Game game) {
+        game.movePriority();
+
         if (game.getPriorityPlayer() == null) {
             moveToNextStep(game);
 
             return;
         }
 
-        game.movePriority();
         broadcastPriority(game);
     }
 
@@ -234,14 +263,14 @@ public class GameManager {
      */
     public void broadcastPriority(final Game game) {
         game.getPriorityPlayer().getSession().sendMessage(
-                ShowOkGameMessageOutgoingMessage.builder()
-                        .message("Cast spells and activate abilities.")
-                        .buttonId("PASS_PRIORITY")
-                        .buttonText("Ok")
+                ShowSingleQuestionGameMessageOutgoingMessage.builder()
+                        .question("Cast spells and activate abilities.")
+                        .responseOneId("PASS_PRIORITY")
+                        .buttonOneText("Ok")
                         .build()
         );
 
-        gameNetworkingManipulator.broadcastMessageExceptTo(game, game.getPriorityPlayer(), "Waiting for "
+        gameNetworkingManipulator.broadcastGameMessageExceptTo(game, game.getPriorityPlayer(), "Waiting for "
                 + game.getActivePlayer().getName() + " to act.");
     }
 

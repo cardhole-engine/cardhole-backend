@@ -2,12 +2,15 @@ package com.github.cardhole.game.networking;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
 import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
+import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
+import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
 import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.player.domain.Player;
@@ -33,6 +36,14 @@ public class GameNetworkingManipulator {
     public void broadcastMessageExceptTo(final Game game, final Player exception, final String log) {
         sendToEveryoneExceptTo(game, exception,
                 SendLogOutgoingMessage.builder()
+                        .message(log)
+                        .build()
+        );
+    }
+
+    public void broadcastGameMessageExceptTo(final Game game, final Player exception, final String log) {
+        sendToEveryoneExceptTo(game, exception,
+                ShowSimpleGameMessageOutgoingMessage.builder()
                         .message(log)
                         .build()
         );
@@ -112,6 +123,14 @@ public class GameNetworkingManipulator {
     public void resetGameMessageForPlayer(final Player player) {
         player.getSession().sendMessage(
                 ResetMessageOutgoingMessage.builder()
+                        .build()
+        );
+    }
+
+    public void broadcastStepChangeMessage(final Game game, final Step newActiveStep) {
+        sendToEveryone(game,
+                StepChangeOutgoingMessage.builder()
+                        .activeStep(newActiveStep)
                         .build()
         );
     }

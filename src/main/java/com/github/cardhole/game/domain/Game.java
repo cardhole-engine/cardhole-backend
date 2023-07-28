@@ -64,6 +64,10 @@ public class Game {
     }
 
     public Player getPriorityPlayer() {
+        if (phasePriority.isEmpty()) {
+            return null;
+        }
+
         return phasePriority.get(0);
     }
 

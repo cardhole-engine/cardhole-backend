@@ -4,10 +4,10 @@ import com.github.cardhole.networking.domain.Message;
 import lombok.Builder;
 
 @Builder
-public record ShowOkGameMessageOutgoingMessage(
+public record ShowSingleQuestionGameMessageOutgoingMessage(
 
-        String message,
-        String buttonId,
-        String buttonText
+        String question,
+        String responseOneId,
+        String buttonOneText
 ) implements Message {
 }
