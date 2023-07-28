@@ -64,6 +64,10 @@ public class GameManager {
                 .forEach(drawingPlayer -> drawForPlayer(drawingPlayer, amount));
     }
 
+    public void drawForPlayer(final Player player) {
+        drawForPlayer(player, 1);
+    }
+
     /**
      * Draws cards for the player and broadcast the changes to the UI for every player.
      *
@@ -71,11 +75,16 @@ public class GameManager {
      * @param amount the amount of cards to draw
      */
     public void drawForPlayer(final Player player, final int amount) {
+        final Game game = gameRegistry.getGame(player.getGameId())
+                .orElseThrow();
+
         final List<Card> drawnCard = player.drawCards(amount);
 
         drawnCard.forEach(card -> gameNetworkingManipulator
                 .sendNewCardToPlayerHand(player, card));
 
+        gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName() + " drawn "
+                + amount + " cards.");
         gameNetworkingManipulator.broadcastPlayerHandSize(player);
         gameNetworkingManipulator.broadcastPlayerDeckSize(player);
     }
@@ -207,7 +216,7 @@ public class GameManager {
                  *    - 504.2. Second, the active player gets priority. (See rule 117, “Timing and Priority.”)
                  */
                 if (!(game.getTurn() == 1 && game.getActivePlayer() == game.getStartingPlayer())) {
-                    game.getActivePlayer().drawCard();
+                    drawForPlayer(game.getActivePlayer());
                 }
 
                 initializePhasePriority(game);

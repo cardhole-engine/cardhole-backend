@@ -20,6 +20,7 @@ public class Game {
 
     private GameStatus status;
     private Player startingPlayer;
+    private boolean startingPlayerWasDecided;
 
     private int turn;
     private Step step;
@@ -47,10 +48,6 @@ public class Game {
 
     public void joinPlayer(final Player player) {
         this.players.add(player);
-    }
-
-    public void resetStartingPlayer() {
-        this.startingPlayer = null;
     }
 
     public boolean isStartingPlayer(final Player player) {

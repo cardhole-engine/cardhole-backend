@@ -31,32 +31,38 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
 
         switch (message.response()) {
             case "GO_FIRST" -> {
-                if (!game.isStartingPlayer(player)) {
+                if (!game.isStartingPlayer(player) || game.isStartingPlayerWasDecided()) {
                     throw new CheatingException("Player " + player.getName() + " tried to decide who go firs while its"
-                            + " not his responsability!");
+                            + " not his responsibility or it was already decided!");
                 }
+
                 game.setActivePlayer(player);
-                game.resetStartingPlayer();
+                game.setStartingPlayerWasDecided(true);
+
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName()
                         + " will go first.");
+
                 gameManager.drawForEveryoneInGame(game, 7);
                 gameManager.initializeMulliganForPlayersInGame(game);
             }
             case "GO_SECOND" -> {
-                if (!game.isStartingPlayer(player)) {
+                if (!game.isStartingPlayer(player) || game.isStartingPlayerWasDecided()) {
                     throw new CheatingException("Player " + player.getName() + " tried to decide who go firs while its"
-                            + " not his responsability!");
+                            + " not his responsibility or it was already decided!");
                 }
+
                 final Player opponent = game.getPlayers().stream()
                         .filter(player1 -> !player1.equals(player))
                         .findFirst()
                         .orElseThrow();
                 game.setActivePlayer(opponent);
-                game.resetStartingPlayer();
+                game.setStartingPlayerWasDecided(true);
+
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
                 gameNetworkingManipulator.broadcastMessage(game, "Player " + opponent.getName()
                         + " will go first.");
+
                 gameManager.drawForEveryoneInGame(game, 7);
                 gameManager.initializeMulliganForPlayersInGame(game);
             }
