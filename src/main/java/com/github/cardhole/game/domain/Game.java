@@ -1,15 +1,14 @@
 package com.github.cardhole.game.domain;
 
+import com.github.cardhole.battlefield.domain.Battlefield;
 import com.github.cardhole.deck.domain.Deck;
+import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
@@ -19,6 +18,9 @@ public class Game {
     private final UUID id;
     private final String name;
     private final List<Player> players;
+    private final Queue<Object> stack;
+
+    private final GameManager gameManager;
 
     private GameStatus status;
     private Player startingPlayer;
@@ -31,11 +33,17 @@ public class Game {
     private Player activePlayer;
     private List<Player> phasePriority;
 
-    public Game(final String name) {
+    private final Battlefield battlefield; // TODO:Shouldn't have a setter
+
+    public Game(final GameManager gameManager, final String name) {
         this.id = UUID.randomUUID();
         this.name = name;
 
+        this.gameManager = gameManager;
+
         this.players = new CopyOnWriteArrayList<>();
+        this.battlefield = new Battlefield();
+        this.stack = new LinkedList<>();
 
         this.status = GameStatus.CREATED;
     }
@@ -81,5 +89,9 @@ public class Game {
     public boolean isStepActive(final Step... steps) {
         return Arrays.stream(steps)
                 .anyMatch(step -> this.step == step);
+    }
+
+    public boolean isStackEmpty() {
+        return stack.isEmpty();
     }
 }

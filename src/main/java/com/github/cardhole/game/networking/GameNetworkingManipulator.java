@@ -11,7 +11,6 @@ import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMess
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
-import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.player.domain.Player;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +22,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GameNetworkingManipulator {
 
-    private final GameRegistry gameRegistry;
-
     public void sendMessageToPlayer(final Player player, final Message message) {
         player.getSession().sendMessage(message);
     }
 
     public void broadcastLogMessage(final Game game, final String message) {
-        sendToEveryone(game,
+        sendMessageToEveryone(game,
                 SendLogOutgoingMessage.builder()
                         .message(message)
                         .build()
@@ -62,7 +59,7 @@ public class GameNetworkingManipulator {
     }
 
     public void resetGameMessageForEveryone(final Game game) {
-        sendToEveryone(game,
+        sendMessageToEveryone(game,
                 ResetMessageOutgoingMessage.builder()
                         .build()
         );
@@ -75,7 +72,7 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void sendToEveryone(final Game game, final Message message) {
+    public void sendMessageToEveryone(final Game game, final Message message) {
         game.getPlayers().stream()
                 .map(Player::getSession)
                 .forEach(session -> session.sendMessage(message));
@@ -111,7 +108,7 @@ public class GameNetworkingManipulator {
      * @param player the player to update the hand size for
      */
     public void broadcastPlayerHandSize(final Player player) {
-        sendToEveryone(player.getGame(),
+        sendMessageToEveryone(player.getGame(),
                 HandSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
                         .handSize(player.getCardCountInHand())
@@ -125,7 +122,7 @@ public class GameNetworkingManipulator {
      * @param player the player to update the deck size for
      */
     public void broadcastPlayerDeckSize(final Player player) {
-        sendToEveryone(player.getGame(),
+        sendMessageToEveryone(player.getGame(),
                 DeckSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
                         .deckSize(player.getCardCountInHand())
@@ -134,7 +131,7 @@ public class GameNetworkingManipulator {
     }
 
     public void broadcastStepChangeMessage(final Game game, final Step newActiveStep) {
-        sendToEveryone(game,
+        sendMessageToEveryone(game,
                 StepChangeOutgoingMessage.builder()
                         .activeStep(newActiveStep)
                         .build()

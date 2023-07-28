@@ -13,6 +13,7 @@ import lombok.Setter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -42,10 +43,12 @@ public class Player {
 
     public Player(final Session session, final Game game, final Deck deck, final int life) {
         this.id = UUID.randomUUID();
+
         this.session = session;
         this.game = game;
         this.deck = deck;
         this.life = life;
+
         this.hand = new Hand();
     }
 
@@ -90,7 +93,7 @@ public class Player {
 
         for (int i = 1; i <= amount; i++) {
             try {
-                final Card card = deck.drawCard().getConstructor().newInstance();
+                final Card card = deck.drawCard().getConstructor().newInstance(game, this);
 
                 hand.addCard(card);
 
@@ -110,5 +113,12 @@ public class Player {
                 .filter(card -> card.canBeCast(game))
                 .map(Card::getId)
                 .toList();
+    }
+
+    public Optional<Card> getCardInHand(final UUID cardId) {
+        return hand.getCards().stream()
+                .map(HandEntry::getCard)
+                .filter(card -> card.getId().equals(cardId))
+                .findFirst();
     }
 }

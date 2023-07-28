@@ -1,16 +1,26 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.player.domain.Player;
+import lombok.Getter;
+
 import java.util.UUID;
 
 public abstract class AbstractCard implements Card {
 
-    private final UUID id;
-    private final String name;
-    private final Set set;
-    private final int setId;
+    protected final UUID id;
+    protected final Game game;
+    protected final String name;
+    protected final Set set;
+    protected final int setId;
 
-    public AbstractCard(final String name, final Set set, final int setId) {
+    @Getter
+    protected final Player owner;
+
+    public AbstractCard(final Game game, final Player owner, final String name, final Set set, final int setId) {
         this.id = UUID.randomUUID();
+        this.game = game;
+        this.owner = owner;
         this.name = name;
         this.set = set;
         this.setId = setId;

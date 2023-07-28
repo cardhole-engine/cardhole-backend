@@ -1,10 +1,12 @@
 package com.github.cardhole.game.service;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.LandCard;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
+import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActivatedListOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
@@ -108,7 +110,7 @@ public class GameManager {
         game.getPlayers()
                 .forEach(player -> player.setWaitingForMulliganReply(true));
 
-        gameNetworkingManipulator.sendToEveryone(game,
+        gameNetworkingManipulator.sendMessageToEveryone(game,
                 ShowDualQuestionGameMessageOutgoingMessage.builder()
                         .question("Do you want to mulligan?")
                         .buttonOneText("Yes")
@@ -354,5 +356,45 @@ public class GameManager {
 
             return playerTwo;
         }
+    }
+
+    /**
+     * Cast a land card to the player's battlefield. It will set the flag that decides if a land was cast this turn to
+     * true, so after thus method was called, no more lands can be cast in the same turn.
+     *
+     * @param player the player who cast the card
+     * @param card   the card that should be cast
+     */
+    public void castLandCardToPlayersBattlefield(final Player player, final LandCard card) {
+        player.getGame().setWasLandCastedThisTurn(true);
+
+        /*
+         * 305.1. A player who has priority may play a land card from their hand during a main phase of their turn when
+         * the stack is empty. Playing a land is a special action; it doesn’t use the stack (see rule 116). Rather, the
+         * player simply puts the land onto the battlefield. Since the land doesn’t go on the stack, it is never a
+         * spell, and players can’t respond to it with instants or activated abilities.
+         */
+        castCardToPlayersBattlefieldWithoutUsingStack(player, card);
+    }
+
+    /**
+     * Cast a card to the player's battlefield, without adding it to the stack. This is needed for some cards like lands
+     * that should never be added to the stack.
+     *
+     * @param player the player who cast the card
+     * @param card   the card that should be cast
+     */
+    public void castCardToPlayersBattlefieldWithoutUsingStack(final Player player, final Card card) {
+        player.getGame().getBattlefield().addCard(card);
+
+        gameNetworkingManipulator.sendMessageToEveryone(player.getGame(),
+                CardEnterToBattlefieldOutgoingMessage.builder()
+                        .id(card.getId())
+                        .name(card.getName())
+                        .ownerId(card.getOwner().getId())
+                        .build()
+        );
+
+        refreshWhatCanBeCastOrActivated(player);
     }
 }
