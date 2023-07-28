@@ -51,7 +51,7 @@ public class GameManager {
                         .build()
         );
 
-        gameNetworkingManipulator.sendToEveryoneExceptTo(game, winnerPlayer,
+        gameNetworkingManipulator.sendMessageToEveryoneExceptTo(game, winnerPlayer,
                 ShowSimpleGameMessageOutgoingMessage.builder()
                         .message("Waiting for the winner player to decide who go first.")
                         .build()
@@ -141,12 +141,17 @@ public class GameManager {
         if (game.getStep() == null) {
             game.setTurn(1);
             game.setStep(Step.UNTAP);
+
+            gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn "
+                    + game.getTurn() + ".");
+            gameNetworkingManipulator.broadcastLogMessage(game, "Starting the turn of "
+                    + game.getActivePlayer().getName() + ".");
         } else if (game.getStep() == Step.UNTAP) {
             game.setStep(Step.UPKEEP);
         } else if (game.getStep() == Step.UPKEEP) {
             game.setStep(Step.DRAW);
         } else if (game.getStep() == Step.DRAW) {
-
+            game.setStep(Step.PRECOMBAT_MAIN);
         }
         //TODO: Add further steps
 

@@ -2,6 +2,7 @@ package com.github.cardhole.game.networking.create;
 
 import com.github.cardhole.deck.service.RandomDeckFactory;
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.JoinGameOutgoingMessage;
 import com.github.cardhole.game.service.container.GameRegistry;
@@ -21,6 +22,7 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
     private final GameRegistry gameRegistry;
     private final RandomDeckFactory randomDeckFactory;
     private final HomeRefresherService homeRefresherService;
+    private final GameNetworkingManipulator gameNetworkingManipulator;
 
     @Override
     public void handleMessage(final Session session, final CreateGameIncomingMessage message) {
@@ -28,7 +30,8 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
         final Player newPlayer = newGame.createPlayer(session, randomDeckFactory.buildRandomDeck());
 
         session.setActiveGameId(newGame.getId());
-        session.sendMessage(
+
+        gameNetworkingManipulator.sendMessageToPlayer(newPlayer,
                 JoinGameOutgoingMessage.builder()
                         .name(message.name())
                         .players(
@@ -44,6 +47,7 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
                         )
                         .build()
         );
+        gameNetworkingManipulator.sendGameMessageToPlayer(newPlayer, "Waiting for an opponent to join.");
 
         homeRefresherService.refreshHomeForSessions();
     }

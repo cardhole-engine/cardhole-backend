@@ -68,7 +68,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
         // Refresh the game screen for the opponents
         gameNetworkingManipulator.broadcastLogMessageExceptTo(gameToJoin, joiningPlayer,
                 "Player " + session.getName() + " joined the game!");
-        gameNetworkingManipulator.sendToEveryoneExceptTo(gameToJoin, joiningPlayer,
+        gameNetworkingManipulator.sendMessageToEveryoneExceptTo(gameToJoin, joiningPlayer,
                 PlayerJoinedOutgoingMessage.builder()
                         .id(joiningPlayer.getId())
                         .name(session.getName())

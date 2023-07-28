@@ -38,17 +38,39 @@ public class GameNetworkingManipulator {
     }
 
     public void broadcastLogMessageExceptTo(final Game game, final Player exception, final String log) {
-        sendToEveryoneExceptTo(game, exception,
+        sendMessageToEveryoneExceptTo(game, exception,
                 SendLogOutgoingMessage.builder()
                         .message(log)
                         .build()
         );
     }
 
-    public void broadcastGameMessageExceptTo(final Game game, final Player exception, final String log) {
-        sendToEveryoneExceptTo(game, exception,
+    public void sendGameMessageToPlayer(final Player player, final String gameMessage) {
+        sendMessageToPlayer(player,
                 ShowSimpleGameMessageOutgoingMessage.builder()
-                        .message(log)
+                        .message(gameMessage)
+                        .build()
+        );
+    }
+
+    public void broadcastGameMessageExceptTo(final Game game, final Player exception, final String gameMessage) {
+        sendMessageToEveryoneExceptTo(game, exception,
+                ShowSimpleGameMessageOutgoingMessage.builder()
+                        .message(gameMessage)
+                        .build()
+        );
+    }
+
+    public void resetGameMessageForEveryone(final Game game) {
+        sendToEveryone(game,
+                ResetMessageOutgoingMessage.builder()
+                        .build()
+        );
+    }
+
+    public void resetGameMessageForPlayer(final Player player) {
+        player.getSession().sendMessage(
+                ResetMessageOutgoingMessage.builder()
                         .build()
         );
     }
@@ -59,7 +81,7 @@ public class GameNetworkingManipulator {
                 .forEach(session -> session.sendMessage(message));
     }
 
-    public void sendToEveryoneExceptTo(final Game game, final Player exception, final Message message) {
+    public void sendMessageToEveryoneExceptTo(final Game game, final Player exception, final Message message) {
         game.getPlayers().stream()
                 .filter(player -> !player.equals(exception))
                 .map(Player::getSession)
@@ -107,20 +129,6 @@ public class GameNetworkingManipulator {
                 DeckSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
                         .deckSize(player.getCardCountInHand())
-                        .build()
-        );
-    }
-
-    public void resetGameMessageForEveryone(final Game game) {
-        sendToEveryone(game,
-                ResetMessageOutgoingMessage.builder()
-                        .build()
-        );
-    }
-
-    public void resetGameMessageForPlayer(final Player player) {
-        player.getSession().sendMessage(
-                ResetMessageOutgoingMessage.builder()
                         .build()
         );
     }
