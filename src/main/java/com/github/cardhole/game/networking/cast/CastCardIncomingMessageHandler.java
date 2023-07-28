@@ -48,6 +48,6 @@ public class CastCardIncomingMessageHandler implements MessageHandler<CastCardIn
 
     @Override
     public Class<CastCardIncomingMessage> supportedMessage() {
-        return null;
+        return CastCardIncomingMessage.class;
     }
 }

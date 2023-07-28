@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record CastCardIncomingMessage(
 
+        String type,
         UUID cardId,
         UUID target,
         TargetType targetType

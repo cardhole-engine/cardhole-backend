@@ -1,5 +1,6 @@
 package com.github.cardhole.game.networking.configuration;
 
+import com.github.cardhole.game.networking.cast.domain.CastCardIncomingMessage;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessage;
 import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomingMessage;
@@ -28,6 +29,13 @@ public class GameMessageConfiguration {
     public MessageTypeRegister questionResponseIncomingMessageTypeRegister() {
         return MessageTypeRegister.builder()
                 .domainClass(QuestionResponseIncomingMessage.class)
+                .build();
+    }
+
+    @Bean
+    public MessageTypeRegister castCardIncomingMessageTypeRegister() {
+        return MessageTypeRegister.builder()
+                .domainClass(CastCardIncomingMessage.class)
                 .build();
     }
 }

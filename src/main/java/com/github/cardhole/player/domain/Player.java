@@ -64,10 +64,6 @@ public class Player {
         return hand.getCardCount();
     }
 
-    public void drawCard() {
-        drawCards(1);
-    }
-
     /**
      * Shuffles the users hand back into it's deck and returning the removed card's ids.
      *
@@ -93,7 +89,8 @@ public class Player {
 
         for (int i = 1; i <= amount; i++) {
             try {
-                final Card card = deck.drawCard().getConstructor().newInstance(game, this);
+                final Card card = deck.drawCard().getConstructor(Game.class, Player.class)
+                        .newInstance(game, this);
 
                 hand.addCard(card);
 
