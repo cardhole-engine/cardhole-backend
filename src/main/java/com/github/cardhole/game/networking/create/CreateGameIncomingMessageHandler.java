@@ -24,10 +24,8 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
 
     @Override
     public void handleMessage(final Session session, final CreateGameIncomingMessage message) {
-        final Player newPlayer = new Player(session, randomDeckFactory.buildRandomDeck(), 20);
-        final Game newGame = new Game(message.name(), newPlayer);
-
-        gameRegistry.registerGame(newGame);
+        final Game newGame = gameRegistry.createGame(message.name());
+        final Player newPlayer = newGame.createPlayer(session, randomDeckFactory.buildRandomDeck());
 
         session.setActiveGameId(newGame.getId());
         session.sendMessage(

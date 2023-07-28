@@ -1,5 +1,6 @@
 package com.github.cardhole.game.domain;
 
+import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
@@ -30,12 +31,11 @@ public class Game {
     private Player activePlayer;
     private List<Player> phasePriority;
 
-    public Game(final String name, final Player owner) {
+    public Game(final String name) {
         this.id = UUID.randomUUID();
         this.name = name;
 
         this.players = new CopyOnWriteArrayList<>();
-        this.players.add(owner);
 
         this.status = GameStatus.CREATED;
     }
@@ -48,8 +48,12 @@ public class Game {
         return players.size() < 2;
     }
 
-    public void joinPlayer(final Player player) {
+    public Player createPlayer(final Session session, final Deck deck) {
+        final Player player = new Player(session, this, deck, 20);
+
         this.players.add(player);
+
+        return player;
     }
 
     public boolean isStartingPlayer(final Player player) {

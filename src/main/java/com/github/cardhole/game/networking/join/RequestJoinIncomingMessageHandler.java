@@ -43,9 +43,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
         }
 
         // Initialize the screen for the joined player
-        final Player joiningPlayer = new Player(session, randomDeckFactory.buildRandomDeck(), 20);
-
-        gameToJoin.joinPlayer(joiningPlayer);
+        final Player joiningPlayer = gameToJoin.createPlayer(session, randomDeckFactory.buildRandomDeck());
 
         session.setActiveGameId(gameToJoin.getId());
         session.sendMessage(

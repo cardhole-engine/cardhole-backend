@@ -7,9 +7,8 @@ import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActivatedListOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
-import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
-import com.github.cardhole.game.service.container.GameRegistry;
+import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameManager {
 
-    private final GameRegistry gameRegistry;
     private final RandomCalculator randomCalculator;
     private final GameNetworkingManipulator gameNetworkingManipulator;
 
@@ -76,15 +74,12 @@ public class GameManager {
      * @param amount the amount of cards to draw
      */
     public void drawForPlayer(final Player player, final int amount) {
-        final Game game = gameRegistry.getGame(player.getGameId())
-                .orElseThrow();
-
         final List<Card> drawnCard = player.drawCards(amount);
 
         drawnCard.forEach(card -> gameNetworkingManipulator
                 .sendNewCardToPlayerHand(player, card));
 
-        gameNetworkingManipulator.broadcastLogMessage(game, "Player " + player.getName() + " drawn "
+        gameNetworkingManipulator.broadcastLogMessage(player.getGame(), "Player " + player.getName() + " drawn "
                 + amount + " cards.");
         gameNetworkingManipulator.broadcastPlayerHandSize(player);
         gameNetworkingManipulator.broadcastPlayerDeckSize(player);
@@ -125,8 +120,7 @@ public class GameManager {
     }
 
     public void finishMulliganForPlayer(final Player player) {
-        final Game game = gameRegistry.getGame(player.getGameId())
-                .orElseThrow();
+        final Game game = player.getGame();
 
         gameNetworkingManipulator.resetGameMessageForPlayer(player);
 
@@ -325,12 +319,9 @@ public class GameManager {
     }
 
     public void refreshWhatCanBeCastOrActivated(final Player player) {
-        final Game game = gameRegistry.getGame(player.getGameId())
-                .orElseThrow();
-
         gameNetworkingManipulator.sendMessageToPlayer(player,
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
-                        .canBeCastOrActivated(player.whatCanBeActivated(game))
+                        .canBeCastOrActivated(player.whatCanBeActivated())
                         .build()
         );
     }

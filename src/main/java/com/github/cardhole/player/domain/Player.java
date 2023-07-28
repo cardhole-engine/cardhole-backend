@@ -26,6 +26,8 @@ public class Player {
     private final Hand hand;
     @Getter
     private final Deck deck;
+    @Getter
+    private final Game game;
 
     @Getter
     private int life;
@@ -38,9 +40,10 @@ public class Player {
     @Setter
     private int mulliganCount;
 
-    public Player(final Session session, final Deck deck, final int life) {
+    public Player(final Session session, final Game game, final Deck deck, final int life) {
         this.id = UUID.randomUUID();
         this.session = session;
+        this.game = game;
         this.deck = deck;
         this.life = life;
         this.hand = new Hand();
@@ -48,11 +51,6 @@ public class Player {
 
     public String getName() {
         return session.getName();
-    }
-
-    public UUID getGameId() {
-        return session.getActiveGameId()
-                .orElseThrow(); // Unlike sessions, players shouldn't exist without a game
     }
 
     public int getCardCountInDeck() {
@@ -106,7 +104,7 @@ public class Player {
         return drawnCards;
     }
 
-    public List<UUID> whatCanBeActivated(final Game game) {
+    public List<UUID> whatCanBeActivated() {
         return hand.getCards().stream()
                 .map(HandEntry::getCard)
                 .filter(card -> card.canBeCast(game))

@@ -15,8 +15,12 @@ public class GameRegistry {
 
     private final Map<UUID, Game> games = new HashMap<>();
 
-    public void registerGame(final Game game) {
+    public Game createGame(final String name) {
+        final Game game = new Game(name);
+
         games.put(game.getId(), game);
+
+        return game;
     }
 
     public void removeGame(final Game game) {

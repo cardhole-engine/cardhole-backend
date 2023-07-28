@@ -89,10 +89,7 @@ public class GameNetworkingManipulator {
      * @param player the player to update the hand size for
      */
     public void broadcastPlayerHandSize(final Player player) {
-        final Game game = gameRegistry.getGame(player.getGameId())
-                .orElseThrow();
-
-        sendToEveryone(game,
+        sendToEveryone(player.getGame(),
                 HandSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
                         .handSize(player.getCardCountInHand())
@@ -106,10 +103,7 @@ public class GameNetworkingManipulator {
      * @param player the player to update the deck size for
      */
     public void broadcastPlayerDeckSize(final Player player) {
-        final Game game = gameRegistry.getGame(player.getGameId())
-                .orElseThrow();
-
-        sendToEveryone(game,
+        sendToEveryone(player.getGame(),
                 DeckSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
                         .deckSize(player.getCardCountInHand())

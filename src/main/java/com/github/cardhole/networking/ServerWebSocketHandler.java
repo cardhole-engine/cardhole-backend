@@ -92,6 +92,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void handleTextMessage(final WebSocketSession session, final TextMessage textMessage) throws Exception {
         final Message message = objectMapper.readValue(textMessage.getPayload(), Message.class);
 
