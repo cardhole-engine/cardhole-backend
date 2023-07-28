@@ -40,7 +40,7 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 game.setStartingPlayerWasDecided(true);
 
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
-                gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName()
+                gameNetworkingManipulator.broadcastLogMessage(game, "Player " + player.getName()
                         + " will go first.");
 
                 gameManager.drawForEveryoneInGame(game, 7);
@@ -60,7 +60,7 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 game.setStartingPlayerWasDecided(true);
 
                 gameNetworkingManipulator.resetGameMessageForEveryone(game);
-                gameNetworkingManipulator.broadcastMessage(game, "Player " + opponent.getName()
+                gameNetworkingManipulator.broadcastLogMessage(game, "Player " + opponent.getName()
                         + " will go first.");
 
                 gameManager.drawForEveryoneInGame(game, 7);
@@ -70,7 +70,7 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 if (player.getMulliganCount() == 6) {
                     throw new CheatingException("Player tries to mulligan when he shouldn't be!");
                 }
-                gameNetworkingManipulator.broadcastMessage(game, player.getName() + " mulligan his hand!");
+                gameNetworkingManipulator.broadcastLogMessage(game, player.getName() + " mulligan his hand!");
                 gameManager.shuffleHandBackToDeck(player);
                 player.setMulliganCount(player.getMulliganCount() + 1);
                 gameManager.drawForPlayer(player, 7 - player.getMulliganCount());
@@ -85,7 +85,7 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                                     .build()
                     );
                 } else {
-                    gameNetworkingManipulator.broadcastMessage(game, player.getName() + " ran out of mulligans!");
+                    gameNetworkingManipulator.broadcastLogMessage(game, player.getName() + " ran out of mulligans!");
 
                     gameManager.finishMulliganForPlayer(player);
                 }

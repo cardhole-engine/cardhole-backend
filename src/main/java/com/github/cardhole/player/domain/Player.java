@@ -2,6 +2,7 @@ package com.github.cardhole.player.domain;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.deck.domain.Deck;
+import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.hand.domain.Hand;
 import com.github.cardhole.hand.domain.HandEntry;
 import com.github.cardhole.session.domain.Session;
@@ -103,5 +104,13 @@ public class Player {
         }
 
         return drawnCards;
+    }
+
+    public List<UUID> whatCanBeActivated(final Game game) {
+        return hand.getCards().stream()
+                .map(HandEntry::getCard)
+                .filter(card -> card.canBeCast(game))
+                .map(Card::getId)
+                .toList();
     }
 }

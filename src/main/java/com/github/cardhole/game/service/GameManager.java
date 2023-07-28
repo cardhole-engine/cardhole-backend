@@ -5,6 +5,7 @@ import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
+import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActivatedListOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
@@ -83,7 +84,7 @@ public class GameManager {
         drawnCard.forEach(card -> gameNetworkingManipulator
                 .sendNewCardToPlayerHand(player, card));
 
-        gameNetworkingManipulator.broadcastMessage(game, "Player " + player.getName() + " drawn "
+        gameNetworkingManipulator.broadcastLogMessage(game, "Player " + player.getName() + " drawn "
                 + amount + " cards.");
         gameNetworkingManipulator.broadcastPlayerHandSize(player);
         gameNetworkingManipulator.broadcastPlayerDeckSize(player);
@@ -135,7 +136,7 @@ public class GameManager {
                 .noneMatch(Player::isWaitingForMulliganReply);
 
         if (gameIsReady) {
-            gameNetworkingManipulator.broadcastMessage(game, "Mulligan finished for everyone");
+            gameNetworkingManipulator.broadcastLogMessage(game, "Mulligan finished for everyone");
 
             moveToNextStep(game);
         }
@@ -222,6 +223,45 @@ public class GameManager {
                 initializePhasePriority(game);
                 broadcastPriority(game);
             }
+            case PRECOMBAT_MAIN -> {
+                /*
+                 * 505. Main Phase
+                 *    - 505.1. There are two main phases in a turn. In each turn, the first main phase (also known as
+                 *          the precombat main phase) and the second main phase (also known as the postcombat main
+                 *          phase) are separated by the combat phase (see rule 506, “Combat Phase”). The precombat and
+                 *          postcombat main phases are individually and collectively known as the main phase.
+                 *      - 505.1a Only the first main phase of the turn is a precombat main phase. All other main phases
+                 *            are postcombat main phases. This includes the second main phase of a turn in which the
+                 *            combat phase has been skipped. It is also true of a turn in which an effect has caused an
+                 *            additional combat phase and an additional main phase to be created.
+                 *    - 505.2. The main phase has no steps, so a main phase ends when all players pass in succession
+                 *          while the stack is empty. (See rule 500.2.)
+                 *    - 505.3. First, but only if the players are playing an Archenemy game (see rule 904), the active
+                 *          player is the archenemy, and it’s the active player’s precombat main phase, the active
+                 *          player sets the top card of their scheme deck in motion (see rule 701.25). This turn-based
+                 *          action doesn’t use the stack.
+                 *    - 505.4. Second, if the active player controls one or more Saga enchantments and it’s the active
+                 *          player’s precombat main phase, the active player puts a lore counter on each Saga they
+                 *          control. (See rule 714, “Saga Cards.”) This turn-based action doesn’t use the stack.
+                 *    - 505.5. Third, if the active player controls one or more Attractions and it’s the active
+                 *          player’s precombat main phase, the active player rolls to visit their Attractions. (See
+                 *          rule 701.49, “Roll to Visit Your Attractions.”) This turn-based action doesn’t use the
+                 *          stack.
+                 *    - 505.6. Fourth, the active player gets priority. (See rule 117, “Timing and Priority.”)
+                 *      - 505.6a The main phase is the only phase in which a player can normally cast artifact,
+                 *            creature, enchantment, planeswalker, and sorcery spells. The active player may cast these
+                 *            spells.
+                 *      - 505.6b During either main phase, the active player may play one land card from their hand if
+                 *            the stack is empty, if the player has priority, and if they haven’t played a land this
+                 *            turn (unless an effect states the player may play additional lands). This action doesn’t
+                 *            use the stack. Neither the land nor the action of playing the land is a spell or ability,
+                 *            so it can’t be countered, and players can’t respond to it with instants or activated
+                 *            abilities. (See rule 305, “Lands.”)
+                 */
+
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
         }
     }
 
@@ -271,16 +311,28 @@ public class GameManager {
      * @param game the game to broadcast the priority in
      */
     public void broadcastPriority(final Game game) {
-        game.getPriorityPlayer().getSession().sendMessage(
+        gameNetworkingManipulator.sendMessageToPlayer(game.getPriorityPlayer(),
                 ShowSingleQuestionGameMessageOutgoingMessage.builder()
                         .question("Cast spells and activate abilities.")
                         .responseOneId("PASS_PRIORITY")
                         .buttonOneText("Ok")
                         .build()
         );
-
         gameNetworkingManipulator.broadcastGameMessageExceptTo(game, game.getPriorityPlayer(), "Waiting for "
                 + game.getActivePlayer().getName() + " to act.");
+
+        refreshWhatCanBeCastOrActivated(game.getPriorityPlayer());
+    }
+
+    public void refreshWhatCanBeCastOrActivated(final Player player) {
+        final Game game = gameRegistry.getGame(player.getGameId())
+                .orElseThrow();
+
+        gameNetworkingManipulator.sendMessageToPlayer(player,
+                RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
+                        .canBeCastOrActivated(player.whatCanBeActivated(game))
+                        .build()
+        );
     }
 
     public Player rollUntilWinner(final Game game) {
@@ -290,19 +342,19 @@ public class GameManager {
         final int playerOneRoll = randomCalculator.randomIntBetween(1, 10);
         final int playerTwoRoll = randomCalculator.randomIntBetween(1, 10);
 
-        gameNetworkingManipulator.broadcastMessage(game, playerOne.getName() + " rolled " + playerOneRoll + ".");
-        gameNetworkingManipulator.broadcastMessage(game, playerTwo.getName() + " rolled " + playerTwoRoll + ".");
+        gameNetworkingManipulator.broadcastLogMessage(game, playerOne.getName() + " rolled " + playerOneRoll + ".");
+        gameNetworkingManipulator.broadcastLogMessage(game, playerTwo.getName() + " rolled " + playerTwoRoll + ".");
 
         if (playerOneRoll == playerTwoRoll) {
-            gameNetworkingManipulator.broadcastMessage(game, "The two rolls are equal. Rerolling!");
+            gameNetworkingManipulator.broadcastLogMessage(game, "The two rolls are equal. Rerolling!");
 
             return rollUntilWinner(game);
         } else if (playerOneRoll > playerTwoRoll) {
-            gameNetworkingManipulator.broadcastMessage(game, playerOne.getName() + " will start the game.");
+            gameNetworkingManipulator.broadcastLogMessage(game, playerOne.getName() + " will start the game.");
 
             return playerOne;
         } else {
-            gameNetworkingManipulator.broadcastMessage(game, playerTwo.getName() + " will start the game.");
+            gameNetworkingManipulator.broadcastLogMessage(game, playerTwo.getName() + " will start the game.");
 
             return playerTwo;
         }

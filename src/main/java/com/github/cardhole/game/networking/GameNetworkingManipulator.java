@@ -25,7 +25,11 @@ public class GameNetworkingManipulator {
 
     private final GameRegistry gameRegistry;
 
-    public void broadcastMessage(final Game game, final String message) {
+    public void sendMessageToPlayer(final Player player, final Message message) {
+        player.getSession().sendMessage(message);
+    }
+
+    public void broadcastLogMessage(final Game game, final String message) {
         sendToEveryone(game,
                 SendLogOutgoingMessage.builder()
                         .message(message)
@@ -33,7 +37,7 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastMessageExceptTo(final Game game, final Player exception, final String log) {
+    public void broadcastLogMessageExceptTo(final Game game, final Player exception, final String log) {
         sendToEveryoneExceptTo(game, exception,
                 SendLogOutgoingMessage.builder()
                         .message(log)

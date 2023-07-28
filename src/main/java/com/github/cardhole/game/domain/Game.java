@@ -5,6 +5,7 @@ import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class Game {
 
     private int turn;
     private Step step;
+    private boolean wasLandCastedThisTurn;
 
     private Player activePlayer;
     private List<Player> phasePriority;
@@ -70,5 +72,10 @@ public class Game {
 
     public void movePriority() {
         phasePriority.remove(0);
+    }
+
+    public boolean isStepActive(final Step... steps) {
+        return Arrays.stream(steps)
+                .anyMatch(step -> this.step == step);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.cardhole.hand.domain;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.game.domain.Game;
 import lombok.Getter;
 
 import java.util.UUID;
