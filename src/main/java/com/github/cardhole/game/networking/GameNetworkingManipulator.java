@@ -125,7 +125,7 @@ public class GameNetworkingManipulator {
         sendMessageToEveryone(player.getGame(),
                 DeckSizeChangeOutgoingMessage.builder()
                         .playerId(player.getId())
-                        .deckSize(player.getCardCountInHand())
+                        .deckSize(player.getCardCountInDeck())
                         .build()
         );
     }
