@@ -1,7 +1,6 @@
 package com.github.cardhole.card.domain;
 
 import com.github.cardhole.game.domain.Game;
-import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.player.domain.Player;
 
 public abstract class LandCard extends AbstractCard implements Permanent {
@@ -12,10 +11,7 @@ public abstract class LandCard extends AbstractCard implements Permanent {
 
     @Override
     public boolean canBeCast() {
-        final Game game = this.getOwner().getGame();
-
-        return game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN) && game.isStackEmpty()
-                && !game.isLandCastedThisTurn() && game.getActivePlayer().equals(owner);
+        return super.canBeCast() && !owner.getGame().isLandCastedThisTurn();
     }
 
     @Override

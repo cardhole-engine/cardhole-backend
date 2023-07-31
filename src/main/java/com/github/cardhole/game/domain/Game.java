@@ -106,4 +106,8 @@ public class Game {
     public void summonCardToBattlefield(final Card card) {
         battlefield.addCard(card);
     }
+
+    public boolean isActivePlayer(final Player player) {
+        return activePlayer.equals(player);
+    }
 }

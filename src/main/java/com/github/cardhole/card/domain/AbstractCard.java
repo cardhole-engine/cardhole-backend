@@ -1,6 +1,7 @@
 package com.github.cardhole.card.domain;
 
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.player.domain.Player;
 import lombok.Getter;
 
@@ -16,6 +17,8 @@ public abstract class AbstractCard implements Card {
 
     @Getter
     protected final Player owner;
+
+    protected boolean castWithInstantSpeed;
 
     public AbstractCard(final Game game, final Player owner, final String name, final Set set, final int setId) {
         this.id = UUID.randomUUID();
@@ -44,5 +47,19 @@ public abstract class AbstractCard implements Card {
     @Override
     public int getSetId() {
         return setId;
+    }
+
+    @Override
+    public boolean canBeCast() {
+        if (castWithInstantSpeed) {
+            return true;
+        }
+
+        /*
+         * 505.6a The main phase is the only phase in which a player can normally cast artifact, creature, enchantment,
+         *     planeswalker, and sorcery spells. The active player may cast these spells.
+         */
+        return game.isActivePlayer(owner) && game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN)
+                && game.isStackEmpty();
     }
 }
