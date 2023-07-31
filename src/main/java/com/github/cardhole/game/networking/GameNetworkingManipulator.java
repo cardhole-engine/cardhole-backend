@@ -3,6 +3,7 @@ package com.github.cardhole.game.networking;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
+import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
@@ -134,6 +135,16 @@ public class GameNetworkingManipulator {
         sendMessageToEveryone(game,
                 StepChangeOutgoingMessage.builder()
                         .activeStep(newActiveStep)
+                        .build()
+        );
+    }
+
+    public void broadcastCardEnterToBattlefield(final Game game, final Card card) {
+        sendMessageToEveryone(game,
+                CardEnterToBattlefieldOutgoingMessage.builder()
+                        .id(card.getId())
+                        .name(card.getName())
+                        .ownerId(card.getOwner().getId())
                         .build()
         );
     }

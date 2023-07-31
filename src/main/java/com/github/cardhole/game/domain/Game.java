@@ -1,6 +1,7 @@
 package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
@@ -12,7 +13,6 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
-@Setter
 public class Game {
 
     private final UUID id;
@@ -22,15 +22,23 @@ public class Game {
 
     private final GameManager gameManager;
 
+    @Setter
     private GameStatus status;
+    @Setter
     private Player startingPlayer;
+    @Setter
     private boolean startingPlayerWasDecided;
 
+    @Setter
     private int turn;
+    @Setter
     private Step step;
+    @Setter
     private boolean wasLandCastedThisTurn;
 
+    @Setter
     private Player activePlayer;
+    @Setter
     private List<Player> phasePriority;
 
     private final Battlefield battlefield; // TODO:Shouldn't have a setter
@@ -93,5 +101,9 @@ public class Game {
 
     public boolean isStackEmpty() {
         return stack.isEmpty();
+    }
+
+    public void summonCardToBattlefield(final Card card) {
+        battlefield.addCard(card);
     }
 }

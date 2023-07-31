@@ -6,7 +6,6 @@ import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
-import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActivatedListOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
@@ -362,11 +361,10 @@ public class GameManager {
      * Cast a land card to the player's battlefield. It will set the flag that decides if a land was cast this turn to
      * true, so after thus method was called, no more lands can be cast in the same turn.
      *
-     * @param player the player who cast the card
-     * @param card   the card that should be cast
+     * @param card the card that should be cast
      */
-    public void castLandCardToPlayersBattlefield(final Player player, final LandCard card) {
-        player.getGame().setWasLandCastedThisTurn(true);
+    public void castLandCardToPlayersBattlefield(final LandCard card) {
+        card.getOwner().getGame().setWasLandCastedThisTurn(true);
 
         /*
          * 305.1. A player who has priority may play a land card from their hand during a main phase of their turn when
@@ -374,27 +372,30 @@ public class GameManager {
          * player simply puts the land onto the battlefield. Since the land doesn’t go on the stack, it is never a
          * spell, and players can’t respond to it with instants or activated abilities.
          */
-        castCardToPlayersBattlefieldWithoutUsingStack(player, card);
+        castCardToPlayersBattlefieldWithoutUsingStack(card);
     }
 
     /**
      * Cast a card to the player's battlefield, without adding it to the stack. This is needed for some cards like lands
      * that should never be added to the stack.
      *
-     * @param player the player who cast the card
-     * @param card   the card that should be cast
+     * @param card the card that should be cast
      */
-    public void castCardToPlayersBattlefieldWithoutUsingStack(final Player player, final Card card) {
-        player.getGame().getBattlefield().addCard(card);
+    public void castCardToPlayersBattlefieldWithoutUsingStack(final Card card) {
+        final Player owner = card.getOwner();
+        final Game game = owner.getGame();
 
-        gameNetworkingManipulator.sendMessageToEveryone(player.getGame(),
-                CardEnterToBattlefieldOutgoingMessage.builder()
-                        .id(card.getId())
-                        .name(card.getName())
-                        .ownerId(card.getOwner().getId())
-                        .build()
-        );
+        game.summonCardToBattlefield(card);
 
-        refreshWhatCanBeCastOrActivated(player);
+        gameNetworkingManipulator.broadcastCardEnterToBattlefield(game, card);
+
+        refreshWhatCanBeCastOrActivated(owner);
+    }
+
+    public void removeCardFromOwnersHand(final Card card) {
+        card.getOwner().removeCardFromHand(card.getId());
+
+        gameNetworkingManipulator.sendRemoveCardFromPlayerHand(card.getOwner(), card.getId());
+        gameNetworkingManipulator.broadcastPlayerHandSize(card.getOwner());
     }
 }

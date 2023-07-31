@@ -4,6 +4,7 @@ import com.github.cardhole.card.domain.Card;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class Hand {
 
@@ -23,6 +24,10 @@ public class Hand {
 
     public List<HandEntry> getCards() {
         return handEntries;
+    }
+
+    public void removeCard(final UUID cardId) {
+        this.handEntries.removeIf(handEntry -> handEntry.getCard().getId().equals(cardId));
     }
 
     public void resetHand() {

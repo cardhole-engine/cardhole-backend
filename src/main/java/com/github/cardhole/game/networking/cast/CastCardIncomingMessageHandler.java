@@ -30,20 +30,23 @@ public class CastCardIncomingMessageHandler implements MessageHandler<CastCardIn
                 .orElseThrow(() -> new CheatingException("Player " + player.getName()
                         + " tired to cast a card that doesn't exist in his/her hand!"));
 
-        if (!card.canBeCast(game)) {
+        if (!card.canBeCast()) {
             return;
         }
 
         if (message.target() == null) {
-            card.cast(player);
+            card.cast(null);
         } else {
-            card.cast(player,
+            card.cast(
                     Target.builder()
                             .id(message.cardId())
                             .type(message.targetType())
                             .build()
             );
         }
+
+        game.getGameManager().removeCardFromOwnersHand(card);
+        game.getGameManager().refreshWhatCanBeCastOrActivated(player);
     }
 
     @Override

@@ -15,18 +15,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class Player {
 
     @Getter
     private final UUID id;
+
     @Getter
     private final Session session;
-    @Getter
+
     private final Hand hand;
-    @Getter
     private final Deck deck;
+
     @Getter
     private final Game game;
 
@@ -105,10 +108,17 @@ public class Player {
     }
 
     public List<UUID> whatCanBeActivated() {
-        return hand.getCards().stream()
+        final Stream<UUID> canBeCastedFromHand = hand.getCards().stream()
                 .map(HandEntry::getCard)
-                .filter(card -> card.canBeCast(game))
-                .map(Card::getId)
+                .filter(Card::canBeCast)
+                .map(Card::getId);
+
+        final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
+                .filter(card -> card.getOwner() == this)
+                .map(Card::getId);
+
+        return Stream.of(canBeCastedFromHand, canBeActivatedOnBattlefield)
+                .flatMap(Function.identity())
                 .toList();
     }
 
@@ -117,5 +127,9 @@ public class Player {
                 .map(HandEntry::getCard)
                 .filter(card -> card.getId().equals(cardId))
                 .findFirst();
+    }
+
+    public void removeCardFromHand(final UUID cardId) {
+        hand.removeCard(cardId);
     }
 }
