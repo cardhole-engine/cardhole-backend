@@ -1,7 +1,5 @@
 package com.github.cardhole.ability;
 
-import com.github.cardhole.player.domain.Player;
-
 import java.util.UUID;
 
 public abstract class AbstractActivatedAbility implements ActivatedAbility {

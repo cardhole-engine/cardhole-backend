@@ -15,7 +15,7 @@ public class LandProvideManaAbility extends AbstractActivatedAbility {
 
     @Override
     public void activate(final Player activator) {
-        activator.getManaPool().addMana(providedMana);
+        activator.getGame().getGameManager().addManaToPlayer(activator, providedMana);
     }
 
     @Override

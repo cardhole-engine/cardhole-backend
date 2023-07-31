@@ -11,6 +11,7 @@ import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActiva
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
+import com.github.cardhole.mana.domain.Mana;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
 import lombok.RequiredArgsConstructor;
@@ -155,8 +156,33 @@ public class GameManager {
             game.setStep(Step.DRAW);
         } else if (game.getStep() == Step.DRAW) {
             game.setStep(Step.PRECOMBAT_MAIN);
+        } else if (game.getStep() == Step.PRECOMBAT_MAIN) {
+            game.setStep(Step.BEGIN_COMBAT);
+        } else if (game.getStep() == Step.BEGIN_COMBAT) {
+            game.setStep(Step.ATTACK);
+        } else if (game.getStep() == Step.ATTACK) {
+            game.setStep(Step.BLOCK);
+        } else if (game.getStep() == Step.BLOCK) {
+            game.setStep(Step.DAMAGE);
+        } else if (game.getStep() == Step.DAMAGE) {
+            game.setStep(Step.END_COMBAT);
+        } else if (game.getStep() == Step.END_COMBAT) {
+            game.setStep(Step.POSTCOMBAT_MAIN);
+        } else if (game.getStep() == Step.POSTCOMBAT_MAIN) {
+            game.setStep(Step.END);
+        } else if (game.getStep() == Step.END) {
+            game.setStep(Step.CLEANUP);
+        } else if (game.getStep() == Step.CLEANUP) {
+            game.setTurn(game.getTurn() + 1);
+            game.setActivePlayer(game.getActivePlayer().equals(game.getPlayers().get(0)) ? game.getPlayers().get(1)
+                    : game.getPlayers().get(0));
+            game.setStep(Step.UNTAP);
+
+            gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn "
+                    + game.getTurn() + ".");
+            gameNetworkingManipulator.broadcastLogMessage(game, "Starting the turn of "
+                    + game.getActivePlayer().getName() + ".");
         }
-        //TODO: Add further steps
 
         gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
 
@@ -164,6 +190,9 @@ public class GameManager {
     }
 
     public void processStep(final Game game) {
+        game.getPlayers()
+                .forEach(this::resetManaPool);
+
         switch (game.getStep()) {
             case UNTAP -> {
                 /*
@@ -297,6 +326,24 @@ public class GameManager {
                 broadcastPriority(game);
             }
         }
+    }
+
+    /**
+     * Reset the player's mana pool, removing every mana in there. Updates the UI for every player in the game with this
+     * information.
+     *
+     * @param player the player to reset the mana pool for
+     */
+    public void resetManaPool(final Player player) {
+        player.getManaPool().reset();
+
+        //TODO: broadcast it to everyone
+    }
+
+    public void addManaToPlayer(final Player player, final List<Mana> mana) {
+        player.getManaPool().addMana(mana);
+
+        //TODO: broadcast it to everyone
     }
 
     /**
