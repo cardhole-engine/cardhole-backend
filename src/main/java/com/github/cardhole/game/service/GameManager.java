@@ -1,7 +1,8 @@
 package com.github.cardhole.game.service;
 
 import com.github.cardhole.card.domain.Card;
-import com.github.cardhole.card.domain.LandCard;
+import com.github.cardhole.card.domain.land.LandCard;
+import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
@@ -426,7 +427,7 @@ public class GameManager {
      *
      * @param card the card that should be cast
      */
-    public void castCardToPlayersBattlefieldWithoutUsingStack(final Card card) {
+    public void castCardToPlayersBattlefieldWithoutUsingStack(final PermanentCard card) {
         final Player owner = card.getOwner();
         final Game game = owner.getGame();
 

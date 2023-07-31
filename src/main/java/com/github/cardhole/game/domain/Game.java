@@ -2,6 +2,7 @@ package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
@@ -103,7 +104,7 @@ public class Game {
         return stack.isEmpty();
     }
 
-    public void summonCardToBattlefield(final Card card) {
+    public void summonCardToBattlefield(final PermanentCard card) {
         battlefield.addCard(card);
     }
 

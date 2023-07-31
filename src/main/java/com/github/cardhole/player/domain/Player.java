@@ -5,6 +5,7 @@ import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.hand.domain.Hand;
 import com.github.cardhole.hand.domain.HandEntry;
+import com.github.cardhole.mana.domain.ManaPool;
 import com.github.cardhole.session.domain.Session;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,9 @@ public class Player {
     private final Game game;
 
     @Getter
+    private final ManaPool manaPool;
+
+    @Getter
     private int life;
 
     @Getter
@@ -53,6 +57,7 @@ public class Player {
         this.life = life;
 
         this.hand = new Hand();
+        this.manaPool = new ManaPool();
     }
 
     public String getName() {

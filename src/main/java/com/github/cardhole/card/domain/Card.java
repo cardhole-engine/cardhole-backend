@@ -15,6 +15,8 @@ public interface Card {
 
     Player getOwner();
 
+    Player getController();
+
     Set getSet();
 
     int getSetId();

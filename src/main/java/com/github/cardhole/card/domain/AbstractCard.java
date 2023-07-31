@@ -15,8 +15,32 @@ public abstract class AbstractCard implements Card {
     protected final Set set;
     protected final int setId;
 
+    /*
+     * The player who (for purposes of the game) a card, permanent, token, or spell belongs to. See rules 108.3, 110.2,
+     * 111.2, and 112.2.
+     *
+     * 108.3. The owner of a card in the game is the player who started the game with it in their deck. If a card is
+     * brought into the game from outside the game rather than starting in a player’s deck, its owner is the player who
+     * brought it into the game. If a card starts the game in the command zone, its owner is the player who put it into
+     * the command zone to start the game. Legal ownership of a card in the game is irrelevant to the game rules except
+     * for the rules for ante. (See rule 407.)
+     */
     @Getter
     protected final Player owner;
+
+    /*
+     * Words that refer to an object’s controller, its would-be controller (if a player is attempting to cast or
+     * activate it), or its owner (if it has no controller). See rule 109.5.
+     *
+     * 109.5. The words “you” and “your” on an object refer to the object’s controller, its would-be controller
+     * (if a player is attempting to play, cast, or activate it), or its owner (if it has no controller). For a static
+     * ability, this is the current controller of the object it’s on. For an activated ability, this is the player who
+     * activated the ability. For a triggered ability, this is the controller of the object when the ability triggered,
+     * unless it’s a delayed triggered ability. To determine the controller of a delayed triggered ability, see rules
+     * 603.7d–f.
+     */
+    @Getter
+    protected final Player controller;
 
     protected boolean castWithInstantSpeed;
 
@@ -24,6 +48,7 @@ public abstract class AbstractCard implements Card {
         this.id = UUID.randomUUID();
         this.game = game;
         this.owner = owner;
+        this.controller = owner;
         this.name = name;
         this.set = set;
         this.setId = setId;
