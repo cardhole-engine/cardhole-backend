@@ -410,7 +410,7 @@ public class GameManager {
      * @param card the card that should be cast
      */
     public void castLandCardToPlayersBattlefield(final LandCard card) {
-        card.getOwner().getGame().setLandCastedThisTurn(true);
+        card.getGame().setLandCastedThisTurn(true);
 
         /*
          * 305.1. A player who has priority may play a land card from their hand during a main phase of their turn when
@@ -429,11 +429,10 @@ public class GameManager {
      */
     public void castCardToPlayersBattlefieldWithoutUsingStack(final PermanentCard card) {
         final Player owner = card.getOwner();
-        final Game game = owner.getGame();
 
-        game.summonCardToBattlefield(card);
+        card.getGame().summonCardToBattlefield(card);
 
-        gameNetworkingManipulator.broadcastCardEnterToBattlefield(game, card);
+        gameNetworkingManipulator.broadcastCardEnterToBattlefield(card);
 
         refreshWhatCanBeCastOrActivated(owner);
     }

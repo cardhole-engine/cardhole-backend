@@ -139,12 +139,12 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardEnterToBattlefield(final Game game, final Card card) {
-        sendMessageToEveryone(game,
+    public void broadcastCardEnterToBattlefield(final Card card) {
+        sendMessageToEveryone(card.getGame(),
                 CardEnterToBattlefieldOutgoingMessage.builder()
                         .id(card.getId())
                         .name(card.getName())
-                        .ownerId(card.getOwner().getId())
+                        .ownerId(card.getController().getId())
                         .build()
         );
     }

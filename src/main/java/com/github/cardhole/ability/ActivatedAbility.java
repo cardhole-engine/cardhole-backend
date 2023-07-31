@@ -1,13 +1,19 @@
 package com.github.cardhole.ability;
 
-import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.player.domain.Player;
+
+import java.util.UUID;
 
 public interface ActivatedAbility {
 
-    //TODO: Input variables
-    void activate();
+    UUID getId();
 
-    default boolean canBeActivated(final Card card) {
-        return card.getOwner().getGame().getPriorityPlayer().equals(card.getController());
+    void activate(Player activator);
+
+    boolean goesToStack();
+
+    default boolean canBeActivated(final PermanentCard card) {
+        return card.getGame().getPriorityPlayer().equals(card.getController()) && card.isUntapped();
     }
 }

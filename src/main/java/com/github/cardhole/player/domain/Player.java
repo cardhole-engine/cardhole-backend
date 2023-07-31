@@ -119,7 +119,8 @@ public class Player {
                 .map(Card::getId);
 
         final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
-                .filter(card -> card.getOwner() == this)
+                .filter(card -> card.getController() == this && card.hasActivatedAbility()
+                        && card.getAbilities().stream().anyMatch(ability -> ability.canBeActivated(card)))
                 .map(Card::getId);
 
         return Stream.of(canBeCastedFromHand, canBeActivatedOnBattlefield)

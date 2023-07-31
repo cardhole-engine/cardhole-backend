@@ -1,5 +1,6 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.player.domain.Player;
 
 import java.util.UUID;
@@ -16,6 +17,10 @@ public interface Card {
     Player getOwner();
 
     Player getController();
+
+    default Game getGame() {
+        return getOwner().getGame();
+    }
 
     Set getSet();
 
