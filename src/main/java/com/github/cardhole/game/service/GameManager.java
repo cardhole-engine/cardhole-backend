@@ -263,6 +263,38 @@ public class GameManager {
                 initializePhasePriority(game);
                 broadcastPriority(game);
             }
+            case BEGIN_COMBAT -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case ATTACK -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case BLOCK -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case DAMAGE -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case END_COMBAT -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case POSTCOMBAT_MAIN -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case END -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
+            case CLEANUP -> {
+                initializePhasePriority(game);
+                broadcastPriority(game);
+            }
         }
     }
 
