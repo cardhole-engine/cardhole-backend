@@ -15,6 +15,7 @@ import com.github.cardhole.random.service.RandomCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -294,6 +295,8 @@ public class GameManager {
      * @param game the game to upgrade the priority for
      */
     public void movePriority(final Game game) {
+        resetWhatCanBeCastOrActivated(game.getPriorityPlayer());
+
         game.movePriority();
 
         if (game.getPriorityPlayer() == null) {
@@ -303,6 +306,8 @@ public class GameManager {
         }
 
         broadcastPriority(game);
+
+        refreshWhatCanBeCastOrActivated(game.getPriorityPlayer());
     }
 
     /**
@@ -328,6 +333,14 @@ public class GameManager {
         gameNetworkingManipulator.sendMessageToPlayer(player,
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
                         .canBeCastOrActivated(player.whatCanBeActivated())
+                        .build()
+        );
+    }
+
+    public void resetWhatCanBeCastOrActivated(final Player player) {
+        gameNetworkingManipulator.sendMessageToPlayer(player,
+                RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
+                        .canBeCastOrActivated(Collections.emptyList())
                         .build()
         );
     }
@@ -364,7 +377,7 @@ public class GameManager {
      * @param card the card that should be cast
      */
     public void castLandCardToPlayersBattlefield(final LandCard card) {
-        card.getOwner().getGame().setWasLandCastedThisTurn(true);
+        card.getOwner().getGame().setLandCastedThisTurn(true);
 
         /*
          * 305.1. A player who has priority may play a land card from their hand during a main phase of their turn when
@@ -392,6 +405,11 @@ public class GameManager {
         refreshWhatCanBeCastOrActivated(owner);
     }
 
+    /**
+     * Removes the card from its owner hand and refresh the UI for everyone in the game.
+     *
+     * @param card the card to remove.
+     */
     public void removeCardFromOwnersHand(final Card card) {
         card.getOwner().removeCardFromHand(card.getId());
 

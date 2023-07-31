@@ -15,7 +15,7 @@ public abstract class LandCard extends AbstractCard implements Permanent {
         final Game game = this.getOwner().getGame();
 
         return game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN) && game.isStackEmpty()
-                && !game.isWasLandCastedThisTurn();
+                && !game.isLandCastedThisTurn() && game.getActivePlayer().equals(owner);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class Game {
     @Setter
     private Step step;
     @Setter
-    private boolean wasLandCastedThisTurn;
+    private boolean landCastedThisTurn;
 
     @Setter
     private Player activePlayer;
