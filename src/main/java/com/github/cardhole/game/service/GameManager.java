@@ -375,6 +375,9 @@ public class GameManager {
      * Moves the priority to the next player, or move the game to the next phase if no-one is left who holds priority
      * for this phase.
      *
+     * <p>
+     * This method will take the player's stop into consideration.
+     *
      * @param game the game to upgrade the priority for
      */
     public void movePriority(final Game game) {
@@ -384,6 +387,24 @@ public class GameManager {
 
         if (game.getPriorityPlayer() == null) {
             moveToNextStep(game);
+
+            // The player gives up priority because he/she doesn't have a stop at the next step
+            if (!game.shouldPriorityPlayerStopAtActualStep()) {
+                movePriority(game);
+
+                return;
+            }
+
+            return;
+        }
+
+        //TODO: This is not too nice that we need to check the stop of a player twice... Maybe we shouldn't add him to
+        // the priority list in the first place? Should the priority list be more dynamic? Idk, we need to think about
+        // it. The whole queue concept seems to be incorrect on the first place.
+
+        // The player gives up priority because he/she doesn't have a stop at the next step
+        if (!game.shouldPriorityPlayerStopAtActualStep()) {
+            movePriority(game);
 
             return;
         }

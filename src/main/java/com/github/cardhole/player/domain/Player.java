@@ -3,6 +3,7 @@ package com.github.cardhole.player.domain;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.hand.domain.Hand;
 import com.github.cardhole.hand.domain.HandEntry;
 import com.github.cardhole.mana.domain.ManaPool;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -48,6 +46,12 @@ public class Player {
     @Setter
     private int mulliganCount;
 
+    @Getter
+    private final Map<Step, Boolean> stopAtStepInMyTurn;
+
+    @Getter
+    private final Map<Step, Boolean> stopAtStepInOpponentTurn;
+
     public Player(final Session session, final Game game, final Deck deck, final int life) {
         this.id = UUID.randomUUID();
 
@@ -58,6 +62,15 @@ public class Player {
 
         this.hand = new Hand();
         this.manaPool = new ManaPool();
+
+        this.stopAtStepInMyTurn = new EnumMap<>(Step.class);
+        this.stopAtStepInMyTurn.put(Step.PRECOMBAT_MAIN, true);
+        this.stopAtStepInMyTurn.put(Step.ATTACK, true);
+        this.stopAtStepInMyTurn.put(Step.BLOCK, true);
+        this.stopAtStepInMyTurn.put(Step.POSTCOMBAT_MAIN, true);
+
+        this.stopAtStepInOpponentTurn = new EnumMap<>(Step.class);
+        this.stopAtStepInOpponentTurn.put(Step.BLOCK, true);
     }
 
     public String getName() {

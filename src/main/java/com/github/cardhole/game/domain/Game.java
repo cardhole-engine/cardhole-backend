@@ -90,6 +90,13 @@ public class Game {
         return phasePriority.get(0);
     }
 
+    public boolean shouldPriorityPlayerStopAtActualStep() {
+        final Player priorityPlayer = getPriorityPlayer();
+
+        return isActivePlayer(priorityPlayer) ? priorityPlayer.getStopAtStepInMyTurn().getOrDefault(step, false)
+                : priorityPlayer.getStopAtStepInOpponentTurn().getOrDefault(step, false);
+    }
+
     public void movePriority() {
         phasePriority.remove(0);
     }
