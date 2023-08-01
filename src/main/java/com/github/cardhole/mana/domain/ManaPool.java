@@ -17,14 +17,11 @@ import java.util.Map;
  */
 public class ManaPool {
 
-    private Map<Mana, Integer> availableMana;
+    private final Map<Mana, Integer> availableMana;
 
     public ManaPool() {
         this.availableMana = new EnumMap<>(Mana.class);
     }
-
-
-    // TODO: It should have availableRedMana etc.
 
     public void addMana(final List<Mana> manaToAdd) {
         for (Mana mana : manaToAdd) {
@@ -34,6 +31,30 @@ public class ManaPool {
                 availableMana.put(mana, 1);
             }
         }
+    }
+
+    public int getWhiteMana() {
+        return availableMana.getOrDefault(Mana.WHITE, 0);
+    }
+
+    public int getBlueMana() {
+        return availableMana.getOrDefault(Mana.BLUE, 0);
+    }
+
+    public int getBlackMana() {
+        return availableMana.getOrDefault(Mana.BLACK, 0);
+    }
+
+    public int getRedMana() {
+        return availableMana.getOrDefault(Mana.RED, 0);
+    }
+
+    public int getGreenMana() {
+        return availableMana.getOrDefault(Mana.GREEN, 0);
+    }
+
+    public int getColorlessMana() {
+        return availableMana.getOrDefault(Mana.COLORLESS, 0);
     }
 
     public void reset() {

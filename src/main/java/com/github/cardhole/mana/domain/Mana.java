@@ -7,5 +7,5 @@ public enum Mana {
     BLUE,
     BLACK,
     GREEN,
-    GRAY
+    COLORLESS
 }

@@ -9,9 +9,11 @@ import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMes
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
 import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
+import com.github.cardhole.game.networking.mana.domain.RefreshManaPoolOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
+import com.github.cardhole.mana.domain.ManaPool;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.player.domain.Player;
 import lombok.RequiredArgsConstructor;
@@ -145,6 +147,21 @@ public class GameNetworkingManipulator {
                         .id(card.getId())
                         .name(card.getName())
                         .ownerId(card.getController().getId())
+                        .build()
+        );
+    }
+
+    public void broadcastRefreshManaPool(final Player player) {
+        final ManaPool playersManaPool = player.getManaPool();
+
+        sendMessageToEveryone(player.getGame(),
+                RefreshManaPoolOutgoingMessage.builder()
+                        .whiteMana(playersManaPool.getWhiteMana())
+                        .blueMana(playersManaPool.getBlueMana())
+                        .blackMana(playersManaPool.getBlackMana())
+                        .redMana(playersManaPool.getRedMana())
+                        .greenMana(playersManaPool.getGreenMana())
+                        .colorlessMana(playersManaPool.getColorlessMana())
                         .build()
         );
     }

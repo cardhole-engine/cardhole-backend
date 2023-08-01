@@ -340,13 +340,13 @@ public class GameManager {
     public void resetManaPool(final Player player) {
         player.getManaPool().reset();
 
-        //TODO: broadcast it to everyone
+        gameNetworkingManipulator.broadcastRefreshManaPool(player);
     }
 
     public void addManaToPlayer(final Player player, final List<Mana> mana) {
         player.getManaPool().addMana(mana);
 
-        //TODO: broadcast it to everyone
+        gameNetworkingManipulator.broadcastRefreshManaPool(player);
     }
 
     /**
