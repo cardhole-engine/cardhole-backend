@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 //TODO: Such an useless name! Come up with something better!
@@ -178,6 +177,7 @@ public class GameManager {
     public void moveToFirstTurn(final Game game) {
         game.setTurn(1);
         game.setStep(Step.UNTAP);
+        game.movePriority();
 
         gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn " + game.getTurn()
                 + ". It is the turn of " + game.getActivePlayer().getName() + ".");
@@ -241,7 +241,7 @@ public class GameManager {
                  */
                 //TODO: Upkeep logic here
 
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case DRAW -> {
@@ -254,7 +254,7 @@ public class GameManager {
                     drawForPlayer(game.getActivePlayer());
                 }
 
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case PRECOMBAT_MAIN -> {
@@ -293,39 +293,39 @@ public class GameManager {
                  *            abilities. (See rule 305, “Lands.”)
                  */
 
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case BEGIN_COMBAT -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case ATTACK -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case BLOCK -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case DAMAGE -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case END_COMBAT -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case POSTCOMBAT_MAIN -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case END -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
             case CLEANUP -> {
-                initializePhasePriority(game);
+                movePriority(game);
                 broadcastPriority(game);
             }
         }
@@ -350,61 +350,20 @@ public class GameManager {
     }
 
     /**
-     * Initialize the priority queue for the active game phase.
-     *
-     * @param game the game to initialize the queue for
-     */
-    public void initializePhasePriority(final Game game) {
-        final List<Player> playerPriority = new LinkedList<>();
-
-        // The active player starts first
-        playerPriority.add(game.getActivePlayer());
-
-        // The opponent goes second
-        playerPriority.add(
-                game.getPlayers().stream()
-                        .filter(player -> !player.equals(game.getActivePlayer()))
-                        .findFirst()
-                        .orElseThrow()
-        );
-
-        game.setPhasePriority(playerPriority);
-    }
-
-    /**
      * Moves the priority to the next player, or move the game to the next phase if no-one is left who holds priority
      * for this phase.
-     *
-     * <p>
-     * This method will take the player's stop into consideration.
      *
      * @param game the game to upgrade the priority for
      */
     public void movePriority(final Game game) {
-        resetWhatCanBeCastOrActivated(game.getPriorityPlayer());
+        if (game.getPriorityPlayer() != null) {
+            resetWhatCanBeCastOrActivated(game.getPriorityPlayer());
+        }
 
         game.movePriority();
 
         if (game.getPriorityPlayer() == null) {
             moveToNextStep(game);
-
-            // The player gives up priority because he/she doesn't have a stop at the next step
-            if (!game.shouldPriorityPlayerStopAtActualStep()) {
-                movePriority(game);
-
-                return;
-            }
-
-            return;
-        }
-
-        //TODO: This is not too nice that we need to check the stop of a player twice... Maybe we shouldn't add him to
-        // the priority list in the first place? Should the priority list be more dynamic? Idk, we need to think about
-        // it. The whole queue concept seems to be incorrect on the first place.
-
-        // The player gives up priority because he/she doesn't have a stop at the next step
-        if (!game.shouldPriorityPlayerStopAtActualStep()) {
-            movePriority(game);
 
             return;
         }
@@ -420,6 +379,10 @@ public class GameManager {
      * @param game the game to broadcast the priority in
      */
     public void broadcastPriority(final Game game) {
+        if (game.getPriorityPlayer() == null) {
+            return;
+        }
+
         gameNetworkingManipulator.sendMessageToPlayer(game.getPriorityPlayer(),
                 ShowSingleQuestionGameMessageOutgoingMessage.builder()
                         .question("Cast spells and activate abilities.")

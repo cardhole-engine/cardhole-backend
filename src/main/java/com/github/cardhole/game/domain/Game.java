@@ -38,8 +38,10 @@ public class Game {
 
     @Setter
     private Player activePlayer;
+
     @Setter
-    private List<Player> phasePriority;
+    @Getter
+    private Player priorityPlayer;
 
     private final Battlefield battlefield; // TODO:Shouldn't have a setter
 
@@ -82,23 +84,28 @@ public class Game {
                 .findFirst();
     }
 
-    public Player getPriorityPlayer() {
-        if (phasePriority.isEmpty()) {
-            return null;
+    public void movePriority() {
+        // Untap doesnt have priorities
+        if (step == Step.UNTAP) {
+            priorityPlayer = null;
         }
 
-        return phasePriority.get(0);
-    }
+        if (priorityPlayer == null && activePlayer.getStopAtStepInMyTurn().getOrDefault(step, false)) {
+            priorityPlayer = activePlayer;
 
-    public boolean shouldPriorityPlayerStopAtActualStep() {
-        final Player priorityPlayer = getPriorityPlayer();
+            return;
+        }
 
-        return isActivePlayer(priorityPlayer) ? priorityPlayer.getStopAtStepInMyTurn().getOrDefault(step, false)
-                : priorityPlayer.getStopAtStepInOpponentTurn().getOrDefault(step, false);
-    }
+        final Player opponent = players.stream()
+                .filter(player -> !player.equals(activePlayer))
+                .findFirst()
+                .orElseThrow();
 
-    public void movePriority() {
-        phasePriority.remove(0);
+        if (isActivePlayer(priorityPlayer) && opponent.getStopAtStepInOpponentTurn().getOrDefault(step, false)) {
+            priorityPlayer = opponent;
+        } else {
+            priorityPlayer = null;
+        }
     }
 
     public boolean isStepActive(final Step... steps) {
