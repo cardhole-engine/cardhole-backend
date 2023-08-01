@@ -173,20 +173,21 @@ public class GameManager {
         } else if (game.getStep() == Step.END) {
             game.setStep(Step.CLEANUP);
         } else if (game.getStep() == Step.CLEANUP) {
-            game.setTurn(game.getTurn() + 1);
-            game.setActivePlayer(game.getActivePlayer().equals(game.getPlayers().get(0)) ? game.getPlayers().get(1)
-                    : game.getPlayers().get(0));
-            game.setStep(Step.UNTAP);
-
-            gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn "
-                    + game.getTurn() + ".");
-            gameNetworkingManipulator.broadcastLogMessage(game, "Starting the turn of "
-                    + game.getActivePlayer().getName() + ".");
+            moveToNextTurn(game);
         }
 
         gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
 
         processStep(game);
+    }
+
+    public void moveToNextTurn(final Game game) {
+        //TODO: End of turn effect cleanup
+
+        game.moveToNextTurn();
+
+        gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn " + game.getTurn()
+                + ". It is the turn of " + game.getActivePlayer().getName() + ".");
     }
 
     public void processStep(final Game game) {

@@ -1,7 +1,6 @@
 package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
-import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
@@ -110,5 +109,15 @@ public class Game {
 
     public boolean isActivePlayer(final Player player) {
         return activePlayer.equals(player);
+    }
+
+    public void moveToNextTurn() {
+        turn = turn + 1;
+
+        landCastedThisTurn = false;
+
+        activePlayer = activePlayer.equals(players.get(0)) ? players.get(1) : players.get(0);
+
+        step = Step.UNTAP;
     }
 }
