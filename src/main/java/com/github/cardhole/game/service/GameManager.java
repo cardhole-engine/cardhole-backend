@@ -242,7 +242,6 @@ public class GameManager {
                 //TODO: Upkeep logic here
 
                 movePriority(game);
-                broadcastPriority(game);
             }
             case DRAW -> {
                 /*
@@ -255,7 +254,6 @@ public class GameManager {
                 }
 
                 movePriority(game);
-                broadcastPriority(game);
             }
             case PRECOMBAT_MAIN -> {
                 /*
@@ -294,39 +292,30 @@ public class GameManager {
                  */
 
                 movePriority(game);
-                broadcastPriority(game);
             }
             case BEGIN_COMBAT -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case ATTACK -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case BLOCK -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case DAMAGE -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case END_COMBAT -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case POSTCOMBAT_MAIN -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case END -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
             case CLEANUP -> {
                 movePriority(game);
-                broadcastPriority(game);
             }
         }
     }
@@ -379,10 +368,6 @@ public class GameManager {
      * @param game the game to broadcast the priority in
      */
     public void broadcastPriority(final Game game) {
-        if (game.getPriorityPlayer() == null) {
-            return;
-        }
-
         gameNetworkingManipulator.sendMessageToPlayer(game.getPriorityPlayer(),
                 ShowSingleQuestionGameMessageOutgoingMessage.builder()
                         .question("Cast spells and activate abilities.")

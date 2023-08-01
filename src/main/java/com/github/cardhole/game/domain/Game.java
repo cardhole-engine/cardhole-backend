@@ -85,7 +85,12 @@ public class Game {
     }
 
     public void movePriority() {
-        // Untap doesnt have priorities
+        /*
+         * 502.4. No player receives priority during the untap step, so no spells can be cast or resolve and no
+         *    abilities can be activated or resolve. Any ability that triggers during this step will be held until the
+         *    next time a player would receive priority, which is usually during the upkeep step. (See rule 503,
+         *    “Upkeep Step.”)
+         */
         if (step == Step.UNTAP) {
             priorityPlayer = null;
         }
