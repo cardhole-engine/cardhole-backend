@@ -143,13 +143,7 @@ public class GameManager {
     public void moveToNextStep(final Game game) {
         //At the beginning of the first turn the step is null
         if (game.getStep() == null) {
-            game.setTurn(1);
-            game.setStep(Step.UNTAP);
-
-            gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn "
-                    + game.getTurn() + ".");
-            gameNetworkingManipulator.broadcastLogMessage(game, "Starting the turn of "
-                    + game.getActivePlayer().getName() + ".");
+            moveToFirstTurn(game);
         } else if (game.getStep() == Step.UNTAP) {
             game.setStep(Step.UPKEEP);
         } else if (game.getStep() == Step.UPKEEP) {
@@ -179,6 +173,14 @@ public class GameManager {
         gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
 
         processStep(game);
+    }
+
+    public void moveToFirstTurn(final Game game) {
+        game.setTurn(1);
+        game.setStep(Step.UNTAP);
+
+        gameNetworkingManipulator.broadcastLogMessage(game, "Starting turn " + game.getTurn()
+                + ". It is the turn of " + game.getActivePlayer().getName() + ".");
     }
 
     public void moveToNextTurn(final Game game) {
