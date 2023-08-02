@@ -13,6 +13,7 @@ import com.github.cardhole.game.networking.mana.domain.RefreshManaPoolOutgoingMe
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
+import com.github.cardhole.game.networking.stop.domain.RefreshStopsOutgoingMessage;
 import com.github.cardhole.mana.domain.ManaPool;
 import com.github.cardhole.networking.domain.Message;
 import com.github.cardhole.player.domain.Player;
@@ -162,6 +163,15 @@ public class GameNetworkingManipulator {
                         .redMana(playersManaPool.getRedMana())
                         .greenMana(playersManaPool.getGreenMana())
                         .colorlessMana(playersManaPool.getColorlessMana())
+                        .build()
+        );
+    }
+
+    public void sendStopRefresh(final Player player) {
+        sendMessageToPlayer(player,
+                RefreshStopsOutgoingMessage.builder()
+                        .stopAtStepInMyTurn(player.getStopAtStepInMyTurn())
+                        .stopAtStepInOpponentTurn(player.getStopAtStepInOpponentTurn())
                         .build()
         );
     }

@@ -64,6 +64,7 @@ public class RequestJoinIncomingMessageHandler implements MessageHandler<Request
                         )
                         .build()
         );
+        gameNetworkingManipulator.sendStopRefresh(joiningPlayer);
 
         // Refresh the game screen for the opponents
         gameNetworkingManipulator.broadcastLogMessageExceptTo(gameToJoin, joiningPlayer,

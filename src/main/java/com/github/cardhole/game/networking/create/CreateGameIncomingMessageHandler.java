@@ -47,6 +47,7 @@ public class CreateGameIncomingMessageHandler implements MessageHandler<CreateGa
                         )
                         .build()
         );
+        gameNetworkingManipulator.sendStopRefresh(newPlayer);
         gameNetworkingManipulator.sendGameMessageToPlayer(newPlayer, "Waiting for an opponent to join.");
 
         homeRefresherService.refreshHomeForSessions();
