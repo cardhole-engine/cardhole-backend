@@ -11,5 +11,5 @@ public record CastCardIncomingMessage(
         UUID cardId,
         UUID target,
         TargetType targetType
-)  implements Message {
+) implements Message {
 }
