@@ -106,7 +106,7 @@ public class Game {
                 .findFirst()
                 .orElseThrow();
 
-        if (isActivePlayer(priorityPlayer) && opponent.getStopAtStepInOpponentTurn().getOrDefault(step, false)) {
+        if ((isActivePlayer(priorityPlayer) || priorityPlayer == null) && opponent.getStopAtStepInOpponentTurn().getOrDefault(step, false)) {
             priorityPlayer = opponent;
         } else {
             priorityPlayer = null;

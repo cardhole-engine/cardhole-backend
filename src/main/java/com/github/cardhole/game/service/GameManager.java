@@ -44,7 +44,7 @@ public class GameManager {
 
         game.setStartingPlayer(winnerPlayer);
 
-        winnerPlayer.getSession().sendMessage(
+        gameNetworkingManipulator.sendMessageToPlayer(winnerPlayer,
                 ShowDualQuestionGameMessageOutgoingMessage.builder()
                         .question("Do you want to go first?")
                         .buttonOneText("Yes")
