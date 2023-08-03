@@ -11,7 +11,9 @@ public interface ActivatedAbility {
 
     void activate(Player activator);
 
-    boolean goesToStack();
+    default boolean goesToStack() {
+        return true;
+    }
 
     default boolean canBeActivated(final PermanentCard card) {
         return card.getGame().getPriorityPlayer().equals(card.getController()) && card.isUntapped();

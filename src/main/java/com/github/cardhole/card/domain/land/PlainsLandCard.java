@@ -11,6 +11,8 @@ import java.util.List;
 public class PlainsLandCard extends LandCard {
 
     public PlainsLandCard(final Game game, final Player owner, final Set set, final int setId) {
-        super(game, owner, "Plains", set, setId, List.of(new LandProvideManaAbility(Mana.WHITE)));
+        super(game, owner, "Plains", set, setId);
+
+        addActivatedAbility(new LandProvideManaAbility(this, Mana.WHITE));
     }
 }

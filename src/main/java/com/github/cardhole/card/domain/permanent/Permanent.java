@@ -8,5 +8,5 @@ public interface Permanent {
 
     boolean hasActivatedAbility();
 
-    List<ActivatedAbility> getAbilities();
+    List<ActivatedAbility> getActivatedAbilities();
 }

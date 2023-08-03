@@ -12,9 +12,8 @@ import java.util.List;
 
 public abstract class LandCard extends PermanentCard implements Permanent {
 
-    public LandCard(final Game game, final Player owner, final String name, final Set set, final int setId,
-                    final List<ActivatedAbility> abilities) {
-        super(game, owner, name, set, setId, abilities);
+    public LandCard(final Game game, final Player owner, final String name, final Set set, final int setId) {
+        super(game, owner, name, set, setId);
     }
 
     @Override

@@ -6,28 +6,26 @@ import com.github.cardhole.card.domain.Set;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.player.domain.Player;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class PermanentCard extends AbstractCard implements Permanent {
 
     private boolean tapped;
-    private final List<ActivatedAbility> abilities;
+    private final List<ActivatedAbility> activatedAbilities = new LinkedList<>();
 
-    public PermanentCard(final Game game, final Player owner, final String name, final Set set, final int setId,
-                         final List<ActivatedAbility> abilities) {
+    public PermanentCard(final Game game, final Player owner, final String name, final Set set, final int setId) {
         super(game, owner, name, set, setId);
-
-        this.abilities = abilities;
     }
 
     @Override
     public boolean hasActivatedAbility() {
-        return !abilities.isEmpty();
+        return !activatedAbilities.isEmpty();
     }
 
     @Override
-    public List<ActivatedAbility> getAbilities() {
-        return abilities;
+    public List<ActivatedAbility> getActivatedAbilities() {
+        return activatedAbilities;
     }
 
     public boolean isTapped() {
@@ -36,5 +34,9 @@ public abstract class PermanentCard extends AbstractCard implements Permanent {
 
     public boolean isUntapped() {
         return !tapped;
+    }
+
+    public void addActivatedAbility(final ActivatedAbility activatedAbility) {
+        this.activatedAbilities.add(activatedAbility);
     }
 }
