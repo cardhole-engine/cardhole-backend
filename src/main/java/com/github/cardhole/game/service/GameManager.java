@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-//TODO: Such an useless name! Come up with something better!
 @Service
 @RequiredArgsConstructor
 public class GameManager {
@@ -466,5 +465,11 @@ public class GameManager {
 
         gameNetworkingManipulator.sendRemoveCardFromPlayerHand(card.getOwner(), card.getId());
         gameNetworkingManipulator.broadcastPlayerHandSize(card.getOwner());
+    }
+
+    public void tapCardOnBattlefield(final PermanentCard permanentCard) {
+        permanentCard.setTapped(true);
+
+        gameNetworkingManipulator.broadcastCardTappedOnBattlefield(permanentCard);
     }
 }

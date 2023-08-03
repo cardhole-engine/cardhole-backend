@@ -4,6 +4,7 @@ import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
+import com.github.cardhole.game.networking.battlefiled.CardTappedOnBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
@@ -172,6 +173,14 @@ public class GameNetworkingManipulator {
                 RefreshStopsOutgoingMessage.builder()
                         .stopAtStepInMyTurn(player.getStopAtStepInMyTurn())
                         .stopAtStepInOpponentTurn(player.getStopAtStepInOpponentTurn())
+                        .build()
+        );
+    }
+
+    public void broadcastCardTappedOnBattlefield(final Card card) {
+        sendMessageToEveryone(card.getGame(),
+                CardTappedOnBattlefieldOutgoingMessage.builder()
+                        .cardId(card.getId())
                         .build()
         );
     }

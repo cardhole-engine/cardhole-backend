@@ -5,12 +5,14 @@ import com.github.cardhole.card.domain.AbstractCard;
 import com.github.cardhole.card.domain.Set;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.player.domain.Player;
+import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class PermanentCard extends AbstractCard implements Permanent {
 
+    @Setter
     private boolean tapped;
     private final List<ActivatedAbility> activatedAbilities = new LinkedList<>();
 

@@ -1,15 +1,15 @@
 package com.github.cardhole.ability;
 
-import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.permanent.PermanentCard;
 
 import java.util.UUID;
 
 public abstract class AbstractActivatedAbility implements ActivatedAbility {
 
     protected final UUID id;
-    protected final Card source;
+    protected final PermanentCard source;
 
-    public AbstractActivatedAbility(final Card source) {
+    public AbstractActivatedAbility(final PermanentCard source) {
         this.id = UUID.randomUUID();
         this.source = source;
     }
