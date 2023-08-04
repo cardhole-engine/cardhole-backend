@@ -1,5 +1,6 @@
 package com.github.cardhole.game.networking.configuration;
 
+import com.github.cardhole.game.networking.ability.domain.UseActivatedAbilityIncomingMessage;
 import com.github.cardhole.game.networking.cast.domain.CastCardIncomingMessage;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessage;
@@ -44,6 +45,13 @@ public class GameMessageConfiguration {
     public MessageTypeRegister changeStopIncomingMessageTypeRegister() {
         return MessageTypeRegister.builder()
                 .domainClass(ChangeStopIncomingMessage.class)
+                .build();
+    }
+
+    @Bean
+    public MessageTypeRegister useActivatedAbilityIncomingMessageTypeRegister() {
+        return MessageTypeRegister.builder()
+                .domainClass(UseActivatedAbilityIncomingMessage.class)
                 .build();
     }
 }

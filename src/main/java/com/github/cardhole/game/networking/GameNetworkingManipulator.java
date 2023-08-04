@@ -1,15 +1,16 @@
 package com.github.cardhole.game.networking;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.battlefiled.CardTappedOnBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
+import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
 import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
-import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
 import com.github.cardhole.game.networking.mana.domain.RefreshManaPoolOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
@@ -143,12 +144,19 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardEnterToBattlefield(final Card card) {
+    public void broadcastCardEnterToBattlefield(final PermanentCard card) {
         sendMessageToEveryone(card.getGame(),
                 CardEnterToBattlefieldOutgoingMessage.builder()
                         .id(card.getId())
                         .name(card.getName())
                         .ownerId(card.getController().getId())
+                        .activatedAbilities(card.getActivatedAbilities().stream()
+                                .map(ability -> CardEnterToBattlefieldOutgoingMessage.ActivatedActivity.builder()
+                                        .id(ability.getId())
+                                        .build()
+                                )
+                                .toList()
+                        )
                         .build()
         );
     }
@@ -158,6 +166,7 @@ public class GameNetworkingManipulator {
 
         sendMessageToEveryone(player.getGame(),
                 RefreshManaPoolOutgoingMessage.builder()
+                        .playerId(player.getId())
                         .whiteMana(playersManaPool.getWhiteMana())
                         .blueMana(playersManaPool.getBlueMana())
                         .blackMana(playersManaPool.getBlackMana())

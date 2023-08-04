@@ -2,7 +2,6 @@ package com.github.cardhole.ability;
 
 import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.mana.domain.Mana;
-import com.github.cardhole.player.domain.Player;
 
 import java.util.List;
 
@@ -17,10 +16,10 @@ public class LandProvideManaAbility extends TapSourceAbility {
     }
 
     @Override
-    public void activate(final Player activator) {
-        super.activate(activator);
+    public void activate() {
+        super.activate();
 
-        activator.getGame().getGameManager().addManaToPlayer(activator, providedMana);
+        source.getGame().getGameManager().addManaToPlayer(source.getController(), providedMana);
     }
 
     @Override

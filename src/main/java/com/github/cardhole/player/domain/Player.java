@@ -1,5 +1,6 @@
 package com.github.cardhole.player.domain;
 
+import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.domain.Game;
@@ -133,7 +134,7 @@ public class Player {
 
         final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
                 .filter(card -> card.getController() == this && card.hasActivatedAbility()
-                        && card.getActivatedAbilities().stream().anyMatch(ability -> ability.canBeActivated(card)))
+                        && card.getActivatedAbilities().stream().anyMatch(ActivatedAbility::canBeActivated))
                 .map(Card::getId);
 
         return Stream.of(canBeCastedFromHand, canBeActivatedOnBattlefield)

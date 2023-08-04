@@ -9,13 +9,15 @@ public interface ActivatedAbility {
 
     UUID getId();
 
-    void activate(Player activator);
+    void activate();
+
+    PermanentCard getSource();
 
     default boolean goesToStack() {
         return true;
     }
 
-    default boolean canBeActivated(final PermanentCard card) {
-        return card.getGame().getPriorityPlayer().equals(card.getController()) && card.isUntapped();
+    default boolean canBeActivated() {
+        return getSource().getGame().getPriorityPlayer().equals(getSource().getController()) && getSource().isUntapped();
     }
 }
