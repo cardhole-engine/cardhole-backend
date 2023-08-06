@@ -16,6 +16,7 @@ public class HomeRefresherService {
 
     //TODO: Split this up! Dont always resend the whole home screen data!
     public void refreshHomeForSessions() {
+        //TODO: Only for logged in sessions!
         sessionRegistry.listSessions()
                 .forEach(this::refreshHomeForSession);
     }

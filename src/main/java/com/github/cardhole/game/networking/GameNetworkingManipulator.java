@@ -96,6 +96,8 @@ public class GameNetworkingManipulator {
                 AddCardToHandOutgoingMessage.builder()
                         .id(card.getId())
                         .name(card.getName())
+                        .set(card.getSet().name())
+                        .setId(card.getSetId())
                         .build()
         );
     }
@@ -150,6 +152,8 @@ public class GameNetworkingManipulator {
                         .id(card.getId())
                         .name(card.getName())
                         .ownerId(card.getController().getId())
+                        .set(card.getSet().name())
+                        .setId(card.getSetId())
                         .activatedAbilities(card.getActivatedAbilities().stream()
                                 .map(ability -> CardEnterToBattlefieldOutgoingMessage.ActivatedActivity.builder()
                                         .id(ability.getId())

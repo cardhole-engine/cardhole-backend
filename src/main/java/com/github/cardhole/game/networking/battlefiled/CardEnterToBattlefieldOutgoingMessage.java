@@ -14,6 +14,8 @@ public record CardEnterToBattlefieldOutgoingMessage(
         UUID id,
         String name,
         UUID ownerId,
+        String set,
+        int setId,
         List<ActivatedActivity> activatedAbilities
 ) implements Message {
 

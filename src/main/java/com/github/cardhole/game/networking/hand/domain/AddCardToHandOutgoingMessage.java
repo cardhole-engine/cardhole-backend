@@ -10,6 +10,8 @@ public record AddCardToHandOutgoingMessage(
 
         //TODO: Add more
         UUID id,
-        String name
+        String name,
+        String set,
+        int setId
 ) implements Message {
 }
