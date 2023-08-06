@@ -34,7 +34,13 @@ public interface Card {
 
     void cast(Target target);
 
+    default boolean isControlledBy(Player player) {
+        return getController().equals(player);
+    }
+
     Set<Supertype> getSupertype();
+
     Set<Type> getType();
+
     Set<Subtype> getSubtype();
 }

@@ -222,7 +222,14 @@ public class GameManager {
                  *          will be held until the next time a player would receive priority, which is usually during
                  *          the upkeep step. (See rule 503, “Upkeep Step.”)
                  */
-                //TODO: Logic to untap everyting
+                game.getBattlefield().getCards().stream()
+                        .filter(card -> card.isControlledBy(game.getActivePlayer()))
+                        .filter(PermanentCard::isTapped)
+                        .forEach(tappedCard -> {
+                            tappedCard.setTapped(false);
+
+                            gameNetworkingManipulator.broadcastCardUntappedOnBattlefield(tappedCard);
+                        });
 
                 moveToNextStep(game);
             }
