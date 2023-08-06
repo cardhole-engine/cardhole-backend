@@ -5,5 +5,7 @@ public enum Subtype {
     /*
      * Basic land subtypes.
      */
-    PLAINS
+    PLAINS,
+
+    OX
 }
