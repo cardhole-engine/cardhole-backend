@@ -1,7 +1,9 @@
 package com.github.cardhole.card.domain.cost;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class ManaCost {
 

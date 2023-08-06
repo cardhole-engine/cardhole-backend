@@ -1,5 +1,7 @@
 package com.github.cardhole.mana.domain;
 
+import com.github.cardhole.card.domain.cost.ManaCost;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -59,5 +61,55 @@ public class ManaPool {
 
     public void reset() {
         availableMana.clear();
+    }
+
+    public boolean hasManaAvailable(final ManaCost manaCost) {
+        final Map<Mana, Integer> manaToUse = new EnumMap<>(availableMana);
+
+        if (manaCost.getWhite() > 0) {
+            if (manaToUse.getOrDefault(Mana.WHITE, 0) < manaCost.getWhite()) {
+                return false;
+            }
+
+            manaToUse.put(Mana.WHITE, manaToUse.get(Mana.WHITE) - manaCost.getWhite());
+        }
+
+        if (manaCost.getBlue() > 0) {
+            if (manaToUse.getOrDefault(Mana.BLUE, 0) < manaCost.getBlue()) {
+                return false;
+            }
+
+            manaToUse.put(Mana.BLUE, manaToUse.get(Mana.BLUE) - manaCost.getBlue());
+        }
+
+        if (manaCost.getBlack() > 0) {
+            if (manaToUse.getOrDefault(Mana.BLACK, 0) < manaCost.getBlack()) {
+                return false;
+            }
+
+            manaToUse.put(Mana.BLACK, manaToUse.get(Mana.BLACK) - manaCost.getBlack());
+        }
+
+        if (manaCost.getRed() > 0) {
+            if (manaToUse.getOrDefault(Mana.RED, 0) < manaCost.getRed()) {
+                return false;
+            }
+
+            manaToUse.put(Mana.RED, manaToUse.get(Mana.RED) - manaCost.getRed());
+        }
+
+        if (manaCost.getGreen() > 0) {
+            if (manaToUse.getOrDefault(Mana.GREEN, 0) < manaCost.getGreen()) {
+                return false;
+            }
+
+            manaToUse.put(Mana.GREEN, manaToUse.get(Mana.GREEN) - manaCost.getGreen());
+        }
+
+        final int leftoverMana = manaToUse.values().stream()
+                .mapToInt(val -> val)
+                .sum();
+
+        return leftoverMana >= manaCost.getColorless();
     }
 }

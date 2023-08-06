@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+@Getter
 @RequiredArgsConstructor
 public enum CardSet {
 
     M14(
             Map.ofEntries(
+                    Map.entry(28, PillarfieldOx.class),
                     Map.entry(230, PlainsI.class),
                     Map.entry(231, PlainsII.class),
                     Map.entry(232, PlainsIII.class),
@@ -18,6 +20,5 @@ public enum CardSet {
             )
     );
 
-    @Getter
     private final Map<Integer, Class<? extends Card>> cards;
 }

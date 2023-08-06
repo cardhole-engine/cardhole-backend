@@ -85,15 +85,15 @@ public abstract class AbstractCard implements Card {
 
     @Override
     public boolean canBeCast() {
-        if (castWithInstantSpeed) {
-            return true;
+        if (!controller.getManaPool().hasManaAvailable(manaCost)) {
+            return false;
         }
 
         /*
          * 505.6a The main phase is the only phase in which a player can normally cast artifact, creature, enchantment,
          *     planeswalker, and sorcery spells. The active player may cast these spells.
          */
-        return game.isActivePlayer(owner) && game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN)
+        return castWithInstantSpeed || game.isActivePlayer(owner) && game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN)
                 && game.isStackEmpty();
     }
 
