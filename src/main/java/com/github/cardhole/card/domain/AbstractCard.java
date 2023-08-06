@@ -1,6 +1,7 @@
 package com.github.cardhole.card.domain;
 
 import com.github.cardhole.card.domain.cost.ManaCost;
+import com.github.cardhole.card.domain.type.CardType;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.card.domain.type.Supertype;
 import com.github.cardhole.card.domain.type.Type;
@@ -22,9 +23,7 @@ public abstract class AbstractCard implements Card {
     protected final CardSet set;
     protected final int setId;
 
-    protected final Set<Supertype> supertype;
-    protected final Set<Type> type;
-    protected final Set<Subtype> subtype;
+    protected final CardType cardType;
 
     protected final ManaCost manaCost;
 
@@ -67,8 +66,7 @@ public abstract class AbstractCard implements Card {
     protected boolean castWithInstantSpeed;
 
     public AbstractCard(final Game game, final Player owner, final String name, final CardSet set, final int setId,
-                        final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype,
-                        final ManaCost manaCost) {
+                        final CardType cardType, final ManaCost manaCost) {
         this.id = UUID.randomUUID();
         this.game = game;
 
@@ -80,9 +78,7 @@ public abstract class AbstractCard implements Card {
         this.set = set;
         this.setId = setId;
 
-        this.supertype = supertype;
-        this.type = type;
-        this.subtype = subtype;
+        this.cardType = cardType;
 
         this.manaCost = manaCost;
     }
@@ -99,5 +95,20 @@ public abstract class AbstractCard implements Card {
          */
         return game.isActivePlayer(owner) && game.isStepActive(Step.PRECOMBAT_MAIN, Step.POSTCOMBAT_MAIN)
                 && game.isStackEmpty();
+    }
+
+    @Override
+    public Set<Supertype> getSupertype() {
+        return cardType.getSupertype();
+    }
+
+    @Override
+    public Set<Type> getType() {
+        return cardType.getType();
+    }
+
+    @Override
+    public Set<Subtype> getSubtype() {
+        return cardType.getSubtype();
     }
 }
