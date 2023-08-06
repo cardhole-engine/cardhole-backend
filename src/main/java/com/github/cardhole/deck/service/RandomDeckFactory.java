@@ -1,7 +1,7 @@
 package com.github.cardhole.deck.service;
 
 import com.github.cardhole.card.domain.Card;
-import com.github.cardhole.card.domain.Set;
+import com.github.cardhole.card.domain.CardSet;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.deck.domain.DeckEntry;
 import com.github.cardhole.random.service.RandomCalculator;
@@ -22,7 +22,7 @@ public class RandomDeckFactory {
 
     //TODO: This is only temporary! We will need a card editor and such.
     public Deck buildRandomDeck() {
-        final List<Class<? extends Card>> possibleCards = Arrays.stream(Set.values())
+        final List<Class<? extends Card>> possibleCards = Arrays.stream(CardSet.values())
                 .flatMap(set -> set.getCards().values().stream())
                 .toList();
 

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public enum Set {
+public enum CardSet {
 
     M14(
             Map.ofEntries(

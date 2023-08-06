@@ -1,19 +1,32 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.card.domain.type.Subtype;
+import com.github.cardhole.card.domain.type.Supertype;
+import com.github.cardhole.card.domain.type.Type;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.player.domain.Player;
 import lombok.Getter;
 
+import java.util.Set;
 import java.util.UUID;
 
+@Getter
 public abstract class AbstractCard implements Card {
 
     protected final UUID id;
     protected final Game game;
     protected final String name;
-    protected final Set set;
+
+    protected final CardSet set;
     protected final int setId;
+
+    /**
+     * @see Supertype
+     */
+    protected final Set<Supertype> supertype;
+    protected final Set<Type> type;
+    protected final Set<Subtype> subtype;
 
     /*
      * The player who (for purposes of the game) a card, permanent, token, or spell belongs to. See rules 108.3, 110.2,
@@ -25,7 +38,6 @@ public abstract class AbstractCard implements Card {
      * the command zone to start the game. Legal ownership of a card in the game is irrelevant to the game rules except
      * for the rules for ante. (See rule 407.)
      */
-    @Getter
     protected final Player owner;
 
     /*
@@ -39,39 +51,37 @@ public abstract class AbstractCard implements Card {
      * unless it’s a delayed triggered ability. To determine the controller of a delayed triggered ability, see rules
      * 603.7d–f.
      */
-    @Getter
     protected final Player controller;
 
+    /*
+     * The informal term "instant speed" means "whenever you would be able to cast instant spells". This is most often
+     * used by the keyword Flash, granting "instancy" to any card type. Some abilities have "sorcery speed" baked into
+     * their rules, and some cards allow them to be activated "any time you could cast an instant". However, the timing
+     * restriction has been used to turn mana abilities into non-mana abilities, most famously Lion's Eye Diamond - this
+     *  is to prevent it from casting spells, as part of the process of casting a spell is putting the spell from the
+     * hand onto the stack before paying costs. Starting with Strixhaven: School of Mages, the card text "only any time
+     * you could cast an instant" was shortened to "activate as an instant."
+     *
+     * @see https://mtg.fandom.com/wiki/Instant
+     */
     protected boolean castWithInstantSpeed;
 
-    public AbstractCard(final Game game, final Player owner, final String name, final Set set, final int setId) {
+    public AbstractCard(final Game game, final Player owner, final String name, final CardSet set, final int setId,
+                        final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype) {
         this.id = UUID.randomUUID();
         this.game = game;
+
         this.owner = owner;
         this.controller = owner;
+
         this.name = name;
+
         this.set = set;
         this.setId = setId;
-    }
 
-    @Override
-    public UUID getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Set getSet() {
-        return set;
-    }
-
-    @Override
-    public int getSetId() {
-        return setId;
+        this.supertype = supertype;
+        this.type = type;
+        this.subtype = subtype;
     }
 
     @Override
