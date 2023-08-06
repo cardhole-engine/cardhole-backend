@@ -1,6 +1,7 @@
 package com.github.cardhole.card.implementation.m14;
 
 import com.github.cardhole.card.domain.CardSet;
+import com.github.cardhole.card.domain.cost.ManaCost;
 import com.github.cardhole.card.domain.creature.CreatureCard;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.game.domain.Game;
@@ -12,6 +13,11 @@ public class PillarfieldOx extends CreatureCard {
 
 
     public PillarfieldOx(final Game game, final Player owner) {
-        super(game, owner, "Pillarfield Ox", CardSet.M14, 28, Set.of(Subtype.OX), 2, 4);
+        super(game, owner, "Pillarfield Ox", CardSet.M14, 28, Set.of(Subtype.OX),
+                ManaCost.builder()
+                        .white(1)
+                        .colorless(3)
+                        .build(),
+                2, 4);
     }
 }

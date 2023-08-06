@@ -3,6 +3,7 @@ package com.github.cardhole.card.domain.permanent;
 import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.AbstractCard;
 import com.github.cardhole.card.domain.CardSet;
+import com.github.cardhole.card.domain.cost.ManaCost;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.card.domain.type.Supertype;
 import com.github.cardhole.card.domain.type.Type;
@@ -21,8 +22,9 @@ public abstract class PermanentCard extends AbstractCard implements Permanent {
     private final List<ActivatedAbility> activatedAbilities = new LinkedList<>();
 
     public PermanentCard(final Game game, final Player owner, final String name, final CardSet set, final int setId,
-                         final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype) {
-        super(game, owner, name, set, setId, supertype, type, subtype);
+                         final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype,
+                         final ManaCost manaCost) {
+        super(game, owner, name, set, setId, supertype, type, subtype, manaCost);
     }
 
     @Override

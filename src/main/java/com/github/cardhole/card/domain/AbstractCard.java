@@ -1,5 +1,6 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.card.domain.cost.ManaCost;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.card.domain.type.Supertype;
 import com.github.cardhole.card.domain.type.Type;
@@ -21,12 +22,11 @@ public abstract class AbstractCard implements Card {
     protected final CardSet set;
     protected final int setId;
 
-    /**
-     * @see Supertype
-     */
     protected final Set<Supertype> supertype;
     protected final Set<Type> type;
     protected final Set<Subtype> subtype;
+
+    protected final ManaCost manaCost;
 
     /*
      * The player who (for purposes of the game) a card, permanent, token, or spell belongs to. See rules 108.3, 110.2,
@@ -67,7 +67,8 @@ public abstract class AbstractCard implements Card {
     protected boolean castWithInstantSpeed;
 
     public AbstractCard(final Game game, final Player owner, final String name, final CardSet set, final int setId,
-                        final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype) {
+                        final Set<Supertype> supertype, final Set<Type> type, final Set<Subtype> subtype,
+                        final ManaCost manaCost) {
         this.id = UUID.randomUUID();
         this.game = game;
 
@@ -82,6 +83,8 @@ public abstract class AbstractCard implements Card {
         this.supertype = supertype;
         this.type = type;
         this.subtype = subtype;
+
+        this.manaCost = manaCost;
     }
 
     @Override
