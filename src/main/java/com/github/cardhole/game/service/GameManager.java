@@ -9,6 +9,7 @@ import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.cast.domain.RefreshCanBeCastAndActivatedListOutgoingMessage;
+import com.github.cardhole.game.networking.combat.domain.MarkCardIsAttackingOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
@@ -458,6 +459,14 @@ public class GameManager {
         gameNetworkingManipulator.sendMessageToPlayer(player,
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
                         .canBeCastOrActivated(player.whatCanAttack())
+                        .build()
+        );
+    }
+
+    public void markCardAsAttacking(final PermanentCard card) {
+        gameNetworkingManipulator.sendMessageToEveryone(card.getGame(),
+                MarkCardIsAttackingOutgoingMessage.builder()
+                        .cardId(card.getId())
                         .build()
         );
     }

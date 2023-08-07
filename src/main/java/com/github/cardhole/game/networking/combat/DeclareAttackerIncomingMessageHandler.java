@@ -44,7 +44,7 @@ public class DeclareAttackerIncomingMessageHandler implements MessageHandler<Dec
 
             gameManager.tapCardOnBattlefield(card);
             gameManager.refreshWhatCanAttack(player);
-            //TODO: Send a packet that shows that the card is attacking on the UI for everyone
+            gameManager.markCardAsAttacking(card);
         } else {
             throw new CheatingException("It is not the time to declare attackers!");
         }
