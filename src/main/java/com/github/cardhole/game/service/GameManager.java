@@ -155,7 +155,23 @@ public class GameManager {
         } else if (game.getStep() == Step.BEGIN_COMBAT) {
             game.setStep(Step.ATTACK);
         } else if (game.getStep() == Step.ATTACK) {
-            game.setStep(Step.BLOCK);
+            /*
+             * 506.1. The combat phase has five steps, which proceed in order: beginning of combat, declare
+             *     attackers, declare blockers, combat damage, and end of combat. The declare blockers and combat
+             *     damage steps are skipped if no creatures are declared as attackers or put onto the battlefield
+             *     attacking (see rule 508.8). There are two combat damage steps if any attacking or blocking
+             *     creature has first strike (see rule 702.7) or double strike (see rule 702.4).
+             *
+             * Skipping the step if there are no attackers.
+             */
+            if (!game.isAnyAttackerActive()) {
+                moveToStep(game, Step.END_COMBAT);
+
+                // The new step will take over the processing from here (incl. refreshing the UI, etc.).
+                return;
+            } else {
+                game.setStep(Step.BLOCK);
+            }
         } else if (game.getStep() == Step.BLOCK) {
             game.setStep(Step.DAMAGE);
         } else if (game.getStep() == Step.DAMAGE) {
@@ -169,6 +185,14 @@ public class GameManager {
         } else if (game.getStep() == Step.CLEANUP) {
             moveToNextTurn(game);
         }
+
+        gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
+
+        processStep(game);
+    }
+
+    public void moveToStep(final Game game, final Step step) {
+        game.setStep(step);
 
         gameNetworkingManipulator.broadcastStepChangeMessage(game, game.getStep());
 
@@ -360,7 +384,7 @@ public class GameManager {
         game.movePriority();
 
         // Do not move the game into the next step, only clear the stack first
-        if(game.isStackActive()) {
+        if (game.isStackActive()) {
             broadcastPriority(game);
 
             refreshWhatCanBeCastOrActivated(game.getPriorityPlayer());
@@ -470,7 +494,7 @@ public class GameManager {
         final StackEntry stackEntry = game.getStack().removeActiveEntry()
                 .orElseThrow();
 
-        if(game.isStackEmpty()) {
+        if (game.isStackEmpty()) {
             game.setStackWasCleared(true);
         }
 

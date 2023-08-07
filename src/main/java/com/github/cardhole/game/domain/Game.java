@@ -1,6 +1,7 @@
 package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
@@ -11,10 +12,7 @@ import com.github.cardhole.stack.domain.StackEntry;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
@@ -23,7 +21,10 @@ public class Game {
     private final UUID id;
     private final String name;
     private final List<Player> players;
+    private final Battlefield battlefield;
     private final Stack stack;
+
+    private final List<Card> attackers;
 
     private final GameManager gameManager;
 
@@ -49,8 +50,6 @@ public class Game {
     @Setter
     private Player priorityPlayer;
 
-    private final Battlefield battlefield;
-
     public Game(final GameManager gameManager, final String name) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -58,6 +57,7 @@ public class Game {
         this.gameManager = gameManager;
 
         this.players = new CopyOnWriteArrayList<>();
+        this.attackers = new LinkedList<>();
         this.battlefield = new Battlefield();
         this.stack = new Stack();
 
@@ -194,5 +194,9 @@ public class Game {
         activePlayer = activePlayer.equals(players.get(0)) ? players.get(1) : players.get(0);
 
         step = Step.UNTAP;
+    }
+
+    public boolean isAnyAttackerActive() {
+        return !attackers.isEmpty();
     }
 }
