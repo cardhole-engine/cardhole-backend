@@ -1,6 +1,7 @@
 package com.github.cardhole.game.service;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.Target;
 import com.github.cardhole.card.domain.land.LandCard;
 import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.game.domain.Game;
@@ -14,6 +15,7 @@ import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGame
 import com.github.cardhole.mana.domain.Mana;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
+import com.github.cardhole.stack.domain.StackEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -357,6 +359,15 @@ public class GameManager {
 
         game.movePriority();
 
+        // Do not move the game into the next step, only clear the stack first
+        if(game.isStackActive()) {
+            broadcastPriority(game);
+
+            refreshWhatCanBeCastOrActivated(game.getPriorityPlayer());
+
+            return;
+        }
+
         if (game.getPriorityPlayer() == null) {
             moveToNextStep(game);
 
@@ -428,13 +439,53 @@ public class GameManager {
         }
     }
 
+    public void castCard(final Card card, final Target target) {
+        /*
+         * We do not move the priority here.
+         *
+         * "The rule is: whenever a player plays a spell, that player gets priority again until he passes it. So, in
+         * theory, a player could play four Lightning Bolts in a row, with a kickered Urza’s Rage on top of that if he
+         * wanted to. As unfair as this might seem, it does not generally give the player any special advantage. Each
+         * spell still resolves one at a time; the fact that the player played the spells one after the other does not
+         * give the spells any special status. So, regardless of how many spells a player plays in a row, the other
+         * player will always get a chance to respond."
+         *
+         * See: https://mtg-archive.fandom.com/wiki/Priority
+         */
+        card.cast(target);
+
+        removeCardFromOwnersHand(card);
+        refreshWhatCanBeCastOrActivated(card.getController());
+    }
+
+    public void putCardToStack(final PermanentCard card) {
+        final Game game = card.getGame();
+
+        game.getStack().addCardToStack(card);
+
+        gameNetworkingManipulator.broadcastCardPutToStack(card);
+    }
+
+    public void removeCardFromStack(final Game game) {
+        final StackEntry stackEntry = game.getStack().removeActiveEntry()
+                .orElseThrow();
+
+        if(game.isStackEmpty()) {
+            game.setStackWasCleared(true);
+        }
+
+        gameNetworkingManipulator.broadcastCardRemovedFromStack(stackEntry.getCard());
+
+        stackEntry.getCard().resolve(stackEntry.getTarget());
+    }
+
     /**
      * Cast a land card to the player's battlefield. It will set the flag that decides if a land was cast this turn to
      * true, so after thus method was called, no more lands can be cast in the same turn.
      *
      * @param card the card that should be cast
      */
-    public void castLandCardToPlayersBattlefield(final LandCard card) {
+    public void putLandCardToPlayersBattlefield(final LandCard card) {
         card.getGame().setLandCastedThisTurn(true);
 
         /*
@@ -443,7 +494,7 @@ public class GameManager {
          * player simply puts the land onto the battlefield. Since the land doesn’t go on the stack, it is never a
          * spell, and players can’t respond to it with instants or activated abilities.
          */
-        castCardToPlayersBattlefieldWithoutUsingStack(card);
+        putCardToPlayersBattlefield(card);
     }
 
     /**
@@ -452,14 +503,14 @@ public class GameManager {
      *
      * @param card the card that should be cast
      */
-    public void castCardToPlayersBattlefieldWithoutUsingStack(final PermanentCard card) {
-        final Player owner = card.getOwner();
+    public void putCardToPlayersBattlefield(final PermanentCard card) {
+        final Player controller = card.getController();
 
-        card.getGame().summonCardToBattlefield(card);
+        card.getGame().putCardToBattlefield(card);
 
         gameNetworkingManipulator.broadcastCardEnterToBattlefield(card);
 
-        refreshWhatCanBeCastOrActivated(owner);
+        refreshWhatCanBeCastOrActivated(controller);
     }
 
     /**

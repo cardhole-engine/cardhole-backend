@@ -27,5 +27,11 @@ public abstract class CreatureCard extends PermanentCard {
 
     @Override
     public void cast(final Target target) {
+        game.getGameManager().putCardToStack(this);
+    }
+
+    @Override
+    public void resolve(final Target target) {
+        game.getGameManager().putCardToPlayersBattlefield(this);
     }
 }

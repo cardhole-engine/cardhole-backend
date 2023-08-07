@@ -9,8 +9,6 @@ import com.github.cardhole.card.domain.type.CardType;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.player.domain.Player;
 
-import java.util.Set;
-
 public abstract class LandCard extends PermanentCard implements Permanent {
 
     public LandCard(final Game game, final Player owner, final String name, final CardSet set, final int setId,
@@ -25,6 +23,6 @@ public abstract class LandCard extends PermanentCard implements Permanent {
 
     @Override
     public void cast(final Target target) {
-        game.getGameManager().castLandCardToPlayersBattlefield(this);
+        game.getGameManager().putLandCardToPlayersBattlefield(this);
     }
 }

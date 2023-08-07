@@ -15,6 +15,8 @@ import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
 import com.github.cardhole.game.networking.mana.domain.RefreshManaPoolOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
+import com.github.cardhole.game.networking.stack.domain.CardPutToStackOutgoingMessage;
+import com.github.cardhole.game.networking.stack.domain.CardRemovedFromStackOutgoingMessage;
 import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
 import com.github.cardhole.game.networking.stop.domain.RefreshStopsOutgoingMessage;
 import com.github.cardhole.mana.domain.ManaPool;
@@ -203,6 +205,26 @@ public class GameNetworkingManipulator {
         sendMessageToEveryone(card.getGame(),
                 CardUntappedOnBattlefieldOutgoingMessage.builder()
                         .cardId(card.getId())
+                        .build()
+        );
+    }
+
+    public void broadcastCardPutToStack(final Card card) {
+        sendMessageToEveryone(card.getGame(),
+                CardPutToStackOutgoingMessage.builder()
+                        .id(card.getId())
+                        .name(card.getName())
+                        .ownerId(card.getController().getId())
+                        .set(card.getSet().name())
+                        .setId(card.getSetId())
+                        .build()
+        );
+    }
+
+    public void broadcastCardRemovedFromStack(final Card card) {
+        sendMessageToEveryone(card.getGame(),
+                CardRemovedFromStackOutgoingMessage.builder()
+                        .id(card.getId())
                         .build()
         );
     }

@@ -34,19 +34,12 @@ public class CastCardIncomingMessageHandler implements MessageHandler<CastCardIn
             return;
         }
 
-        if (message.target() == null) {
-            card.cast(null);
-        } else {
-            card.cast(
-                    Target.builder()
-                            .id(message.cardId())
-                            .type(message.targetType())
-                            .build()
-            );
-        }
-
-        game.getGameManager().removeCardFromOwnersHand(card);
-        game.getGameManager().refreshWhatCanBeCastOrActivated(player);
+        game.getGameManager().castCard(card,
+                Target.builder()
+                        .id(message.cardId())
+                        .type(message.targetType())
+                        .build()
+        );
     }
 
     @Override

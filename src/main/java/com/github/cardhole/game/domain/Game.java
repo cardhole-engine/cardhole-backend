@@ -6,10 +6,15 @@ import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
+import com.github.cardhole.stack.domain.Stack;
+import com.github.cardhole.stack.domain.StackEntry;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
@@ -18,7 +23,7 @@ public class Game {
     private final UUID id;
     private final String name;
     private final List<Player> players;
-    private final Queue<Object> stack;
+    private final Stack stack;
 
     private final GameManager gameManager;
 
@@ -35,15 +40,16 @@ public class Game {
     private Step step;
     @Setter
     private boolean landCastedThisTurn;
+    @Setter
+    private boolean stackWasCleared;
 
     @Setter
     private Player activePlayer;
 
     @Setter
-    @Getter
     private Player priorityPlayer;
 
-    private final Battlefield battlefield; // TODO:Shouldn't have a setter
+    private final Battlefield battlefield;
 
     public Game(final GameManager gameManager, final String name) {
         this.id = UUID.randomUUID();
@@ -53,7 +59,7 @@ public class Game {
 
         this.players = new CopyOnWriteArrayList<>();
         this.battlefield = new Battlefield();
-        this.stack = new LinkedList<>();
+        this.stack = new Stack();
 
         this.status = GameStatus.CREATED;
     }
@@ -95,16 +101,62 @@ public class Game {
             priorityPlayer = null;
         }
 
-        if (priorityPlayer == null && activePlayer.getStopAtStepInMyTurn().getOrDefault(step, false)) {
+        final Player opponent = players.stream()
+                .filter(player -> !player.equals(activePlayer))
+                .findFirst()
+                .orElseThrow();
+
+        /*
+         * If the last stack element was cleared from the stack, the active player might do more stuff before moving
+         * to the next stage.
+         *
+         * For example:
+         *  - Active player summon a creature.
+         *  - Active player pass priority.
+         *  - Opponent pass priority.
+         *  - The active player should gain the priority again, without moving the game to the next step.
+         */
+        if (stackWasCleared) {
+            stackWasCleared = false;
+
             priorityPlayer = activePlayer;
 
             return;
         }
 
-        final Player opponent = players.stream()
-                .filter(player -> !player.equals(activePlayer))
-                .findFirst()
-                .orElseThrow();
+        /*
+         * If the stack is active, it should be cleared before moving to the next step.
+         *
+         * 117.4. If all players pass in succession (that is, if all players pass without taking any actions in between
+         *    passing), the spell or ability on top of the stack resolves or, if the stack is empty, the phase or step
+         *    ends.
+         */
+        if (isStackActive()) {
+            final StackEntry stackEntry = stack.getActiveEntry()
+                    .orElseThrow();
+
+            if (stackEntry.isOpponentPassedPriority()) {
+                //TODO: Let the opponent act again on next stack entry, even if he already act on it.
+
+                gameManager.removeCardFromStack(opponent.getGame());
+            } else {
+                stackEntry.setOpponentPassedPriority(true);
+
+                priorityPlayer = opponent;
+
+                return;
+            }
+
+            movePriority();
+
+            return;
+        }
+
+        if (priorityPlayer == null && activePlayer.getStopAtStepInMyTurn().getOrDefault(step, false)) {
+            priorityPlayer = activePlayer;
+
+            return;
+        }
 
         if ((isActivePlayer(priorityPlayer) || priorityPlayer == null) && opponent.getStopAtStepInOpponentTurn().getOrDefault(step, false)) {
             priorityPlayer = opponent;
@@ -122,7 +174,11 @@ public class Game {
         return stack.isEmpty();
     }
 
-    public void summonCardToBattlefield(final PermanentCard card) {
+    public boolean isStackActive() {
+        return !stack.isEmpty();
+    }
+
+    public void putCardToBattlefield(final PermanentCard card) {
         battlefield.addCard(card);
     }
 

@@ -32,7 +32,11 @@ public interface Card {
 
     boolean canBeCast();
 
-    void cast(Target target);
+    default void cast(Target target) {
+    }
+
+    default void resolve(Target target) {
+    }
 
     default boolean isControlledBy(Player player) {
         return getController().equals(player);
