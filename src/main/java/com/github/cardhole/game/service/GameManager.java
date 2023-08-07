@@ -329,7 +329,7 @@ public class GameManager {
                 movePriority(game);
             }
             case ATTACK -> {
-                movePriority(game);
+                broadcastDeclareAttackers(game);
             }
             case BLOCK -> {
                 movePriority(game);
@@ -434,6 +434,30 @@ public class GameManager {
         gameNetworkingManipulator.sendMessageToPlayer(player,
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
                         .canBeCastOrActivated(Collections.emptyList())
+                        .build()
+        );
+    }
+
+    public void broadcastDeclareAttackers(final Game game) {
+        gameNetworkingManipulator.sendMessageToPlayer(game.getActivePlayer(),
+                ShowSingleQuestionGameMessageOutgoingMessage.builder()
+                        .question("Declare attackers.")
+                        .responseOneId("DECLARE_ATTACKERS")
+                        .buttonOneText("Ok")
+                        .build()
+        );
+        gameNetworkingManipulator.broadcastGameMessageExceptTo(game, game.getActivePlayer(), "Waiting for "
+                + game.getActivePlayer().getName() + " to declare attackers.");
+
+        refreshWhatCanAttack(game.getActivePlayer());
+
+        game.setWaitingForAttackers(true);
+    }
+
+    public void refreshWhatCanAttack(final Player player) {
+        gameNetworkingManipulator.sendMessageToPlayer(player,
+                RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
+                        .canBeCastOrActivated(player.whatCanAttack())
                         .build()
         );
     }

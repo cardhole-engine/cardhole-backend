@@ -133,12 +133,19 @@ public class Player {
                 .map(Card::getId);
 
         final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
-                .filter(card -> card.getController() == this && card.hasActivatedAbility()
+                .filter(card -> card.isControlledBy(this) && card.hasActivatedAbility()
                         && card.getActivatedAbilities().stream().anyMatch(ActivatedAbility::canBeActivated))
                 .map(Card::getId);
 
         return Stream.of(canBeCastedFromHand, canBeActivatedOnBattlefield)
                 .flatMap(Function.identity())
+                .toList();
+    }
+
+    public List<UUID> whatCanAttack() {
+        return game.getBattlefield().getCards().stream()
+                .filter(card -> card.isControlledBy(this) && card.isUntapped())
+                .map(Card::getId)
                 .toList();
     }
 

@@ -2,6 +2,7 @@ package com.github.cardhole.game.networking.configuration;
 
 import com.github.cardhole.game.networking.ability.domain.UseActivatedAbilityIncomingMessage;
 import com.github.cardhole.game.networking.cast.domain.CastCardIncomingMessage;
+import com.github.cardhole.game.networking.combat.domain.DeclareAttackerIncomingMessage;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessage;
 import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomingMessage;
@@ -10,6 +11,7 @@ import com.github.cardhole.networking.domain.MessageTypeRegister;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//TODO: I don't think this is even needed, we can just autowire all of the message handlers and get the supported message types
 @Configuration
 public class GameMessageConfiguration {
 
@@ -52,6 +54,13 @@ public class GameMessageConfiguration {
     public MessageTypeRegister useActivatedAbilityIncomingMessageTypeRegister() {
         return MessageTypeRegister.builder()
                 .domainClass(UseActivatedAbilityIncomingMessage.class)
+                .build();
+    }
+
+    @Bean
+    public MessageTypeRegister declareAttackerIncomingMessageTypeRegister() {
+        return MessageTypeRegister.builder()
+                .domainClass(DeclareAttackerIncomingMessage.class)
                 .build();
     }
 }

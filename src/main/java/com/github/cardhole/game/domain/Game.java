@@ -50,6 +50,9 @@ public class Game {
     @Setter
     private Player priorityPlayer;
 
+    @Setter
+    private boolean waitingForAttackers;
+
     public Game(final GameManager gameManager, final String name) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -198,5 +201,9 @@ public class Game {
 
     public boolean isAnyAttackerActive() {
         return !attackers.isEmpty();
+    }
+
+    public void addAttacker(final PermanentCard card) {
+        this.attackers.add(card);
     }
 }

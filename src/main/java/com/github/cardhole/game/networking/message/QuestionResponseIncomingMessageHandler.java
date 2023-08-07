@@ -92,6 +92,11 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
             }
             case "NO_MULLIGAN" -> gameManager.finishMulliganForPlayer(player);
             case "PASS_PRIORITY" -> gameManager.movePriority(game);
+            case "DECLARE_ATTACKERS" -> {
+                gameManager.movePriority(game);
+
+                game.setWaitingForAttackers(false);
+            }
         }
     }
 
