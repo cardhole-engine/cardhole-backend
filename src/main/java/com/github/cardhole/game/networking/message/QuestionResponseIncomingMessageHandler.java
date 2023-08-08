@@ -2,9 +2,11 @@ package com.github.cardhole.game.networking.message;
 
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
+import com.github.cardhole.game.networking.combat.domain.ResetBlockerOutgoingMessage;
 import com.github.cardhole.game.networking.domain.CheatingException;
 import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMessageOutgoingMessage;
+import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.game.service.container.GameRegistry;
 import com.github.cardhole.networking.domain.MessageHandler;
@@ -96,6 +98,22 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
                 gameManager.movePriority(game);
 
                 game.setWaitingForAttackers(false);
+            }
+            case "CHOOSE_ATTACKER" -> {
+                gameNetworkingManipulator.sendMessageToPlayer(player,
+                        ShowSingleQuestionGameMessageOutgoingMessage.builder()
+                                .question("Declare blockers.")
+                                .responseOneId("DECLARE_BLOCKERS")
+                                .buttonOneText("Ok")
+                                .build()
+                );
+
+                gameNetworkingManipulator.sendMessageToPlayer(player,
+                        ResetBlockerOutgoingMessage.builder()
+                                .build()
+                );
+
+                gameManager.refreshWhatCanBlock(player);
             }
         }
     }
