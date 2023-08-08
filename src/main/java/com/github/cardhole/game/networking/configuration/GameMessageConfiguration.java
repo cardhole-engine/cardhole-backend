@@ -3,6 +3,7 @@ package com.github.cardhole.game.networking.configuration;
 import com.github.cardhole.game.networking.ability.domain.UseActivatedAbilityIncomingMessage;
 import com.github.cardhole.game.networking.cast.domain.CastCardIncomingMessage;
 import com.github.cardhole.game.networking.combat.domain.DeclareAttackerIncomingMessage;
+import com.github.cardhole.game.networking.combat.domain.IntendsToBlockWithIncomingMessage;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;
 import com.github.cardhole.game.networking.join.domain.RequestJoinIncomingMessage;
 import com.github.cardhole.game.networking.message.domain.QuestionResponseIncomingMessage;
@@ -61,6 +62,13 @@ public class GameMessageConfiguration {
     public MessageTypeRegister declareAttackerIncomingMessageTypeRegister() {
         return MessageTypeRegister.builder()
                 .domainClass(DeclareAttackerIncomingMessage.class)
+                .build();
+    }
+
+    @Bean
+    public MessageTypeRegister intendsToBlockWithIncomingMessageTypeRegister() {
+        return MessageTypeRegister.builder()
+                .domainClass(IntendsToBlockWithIncomingMessage.class)
                 .build();
     }
 }

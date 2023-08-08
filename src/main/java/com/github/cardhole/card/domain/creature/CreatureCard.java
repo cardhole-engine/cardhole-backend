@@ -1,5 +1,6 @@
 package com.github.cardhole.card.domain.creature;
 
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.CardSet;
 import com.github.cardhole.card.domain.Target;
 import com.github.cardhole.card.domain.cost.ManaCost;
@@ -33,5 +34,9 @@ public abstract class CreatureCard extends PermanentCard {
     @Override
     public void resolve(final Target target) {
         game.getGameManager().putCardToPlayersBattlefield(this);
+    }
+
+    public boolean canBeBlockedBy(final Card card) {
+        return true;
     }
 }

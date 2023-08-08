@@ -149,6 +149,13 @@ public class Player {
                 .toList();
     }
 
+    public List<UUID> whatCanBlock() {
+        return game.getBattlefield().getCards().stream()
+                .filter(card -> card.isControlledBy(this) && card.isUntapped())
+                .map(Card::getId)
+                .toList();
+    }
+
     public Optional<Card> getCardInHand(final UUID cardId) {
         return hand.getCards().stream()
                 .map(HandEntry::getCard)

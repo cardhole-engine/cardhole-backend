@@ -2,6 +2,7 @@ package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.creature.CreatureCard;
 import com.github.cardhole.card.domain.permanent.PermanentCard;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
@@ -52,6 +53,8 @@ public class Game {
 
     @Setter
     private boolean waitingForAttackers;
+    @Setter
+    private boolean waitingForBlockers;
 
     public Game(final GameManager gameManager, final String name) {
         this.id = UUID.randomUUID();
@@ -205,5 +208,20 @@ public class Game {
 
     public void addAttacker(final PermanentCard card) {
         this.attackers.add(card);
+    }
+
+    public boolean isAttacking(final PermanentCard card) {
+        return this.attackers.contains(card);
+    }
+
+    public List<UUID> canBeBlockedBy(final PermanentCard card) {
+        return battlefield.getCards().stream()
+                .filter(cardOnBattlefield -> !cardOnBattlefield.isControlledBy(card.getController()))
+                .filter(this::isAttacking)
+                .filter(cardOnBattlefield -> cardOnBattlefield instanceof CreatureCard)
+                .map(cardOnBattlefield -> (CreatureCard) cardOnBattlefield)
+                .filter(creatureCard -> creatureCard.canBeBlockedBy(card))
+                .map(Card::getId)
+                .toList();
     }
 }

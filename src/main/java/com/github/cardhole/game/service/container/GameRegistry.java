@@ -2,6 +2,7 @@ package com.github.cardhole.game.service.container;
 
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.service.GameManager;
+import com.github.cardhole.session.domain.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +39,10 @@ public class GameRegistry {
 
     public Optional<Game> getGame(final UUID id) {
         return Optional.ofNullable(games.get(id));
+    }
+
+    public Optional<Game> getGame(final Session session) {
+        return session.getActiveGameId()
+                .flatMap(this::getGame);
     }
 }

@@ -333,7 +333,7 @@ public class GameManager {
                 broadcastDeclareAttackers(game);
             }
             case BLOCK -> {
-                movePriority(game);
+                broadcastDeclareBlockers(game);
             }
             case DAMAGE -> {
                 movePriority(game);
@@ -459,6 +459,43 @@ public class GameManager {
         gameNetworkingManipulator.sendMessageToPlayer(player,
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
                         .canBeCastOrActivated(player.whatCanAttack())
+                        .build()
+        );
+    }
+
+    public void broadcastDeclareBlockers(final Game game) {
+        final Player opponent = game.getPlayers().stream()
+                .filter(player -> !game.isActivePlayer(player))
+                .findFirst()
+                .orElseThrow();
+
+        gameNetworkingManipulator.sendMessageToPlayer(opponent,
+                ShowSingleQuestionGameMessageOutgoingMessage.builder()
+                        .question("Declare blockers.")
+                        .responseOneId("DECLARE_BLOCKERS")
+                        .buttonOneText("Ok")
+                        .build()
+        );
+        gameNetworkingManipulator.broadcastGameMessageExceptTo(game, opponent, "Waiting for "
+                + opponent.getName() + " to declare blockers.");
+
+        refreshWhatCanBlock(opponent);
+
+        game.setWaitingForBlockers(true);
+    }
+
+    public void refreshWhatCanBlock(final Player player) {
+        gameNetworkingManipulator.sendMessageToPlayer(player,
+                RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
+                        .canBeCastOrActivated(player.whatCanBlock())
+                        .build()
+        );
+    }
+
+    public void refreshWhatCanBlockedBy(final PermanentCard card) {
+        gameNetworkingManipulator.sendMessageToPlayer(card.getController(),
+                RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
+                        .canBeCastOrActivated(card.getGame().canBeBlockedBy(card))
                         .build()
         );
     }
