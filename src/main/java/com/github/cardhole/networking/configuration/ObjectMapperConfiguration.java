@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.github.cardhole.networking.domain.Message;
-import com.github.cardhole.networking.domain.MessageTypeRegister;
+import com.github.cardhole.networking.domain.MessageHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.List;
 
@@ -14,13 +15,29 @@ import java.util.List;
 public class ObjectMapperConfiguration {
 
     @Bean
-    public ObjectMapper objectMapper(final List<MessageTypeRegister> messageTypeRegisters) {
+    @Primary
+    public ObjectMapper defaultObjectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public ObjectMapper outputObjectMapper() {
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.addMixIn(Message.class, MessageTypeMixIn.class);
+
+        return objectMapper;
+    }
+
+    @Bean
+    public ObjectMapper inputObjectMapper(final List<MessageHandler<?>> messageTypeRegisters) {
         final ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.addMixIn(Message.class, MessageTypeMixIn.class);
         objectMapper.registerSubtypes(
                 messageTypeRegisters.stream()
-                        .map(messageTypeRegister -> new NamedType(messageTypeRegister.domainClass(), messageTypeRegister.domainClass().getSimpleName()))
+                        .map(messageTypeRegister -> new NamedType(messageTypeRegister.supportedMessage(),
+                                messageTypeRegister.supportedMessage().getSimpleName()))
                         .toList()
                         .toArray(NamedType[]::new)
         );

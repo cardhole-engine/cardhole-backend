@@ -8,6 +8,7 @@ import com.github.cardhole.networking.domain.MessageHandler;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.service.SessionRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -27,18 +28,18 @@ import java.util.stream.Collectors;
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper inputObjectMapper;
     private final GameRegistry gameRegistry;
     private final SessionRegistry sessionRegistry;
     private final HomeRefresherService homeRefresherService;
     private final Map<Class, MessageHandler> messageHandlers;
 
-    public ServerWebSocketHandler(final ObjectMapper objectMapper,
+    public ServerWebSocketHandler(@Qualifier("inputObjectMapper") final ObjectMapper inputObjectMapper,
                                   final GameRegistry gameRegistry,
                                   final SessionRegistry sessionRegistry,
                                   final HomeRefresherService homeRefresherService,
                                   final List<MessageHandler<?>> messageHandlers) {
-        this.objectMapper = objectMapper;
+        this.inputObjectMapper = inputObjectMapper;
         this.gameRegistry = gameRegistry;
         this.sessionRegistry = sessionRegistry;
         this.homeRefresherService = homeRefresherService;
@@ -94,7 +95,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     @Override
     @SuppressWarnings("unchecked")
     public void handleTextMessage(final WebSocketSession session, final TextMessage textMessage) throws Exception {
-        final Message message = objectMapper.readValue(textMessage.getPayload(), Message.class);
+        final Message message = inputObjectMapper.readValue(textMessage.getPayload(), Message.class);
 
         log.info("Got message: {}", message);
 
