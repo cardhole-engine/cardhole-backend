@@ -625,7 +625,7 @@ public class GameManager {
      * @param card the card to remove.
      */
     public void removeCardFromOwnersHand(final Card card) {
-        card.getOwner().removeCardFromHand(card.getId());
+        card.getOwner().removeCardFromHand(card);
 
         gameNetworkingManipulator.sendRemoveCardFromPlayerHand(card.getOwner(), card.getId());
         gameNetworkingManipulator.broadcastPlayerHandSize(card.getOwner());

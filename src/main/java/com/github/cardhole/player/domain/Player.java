@@ -7,11 +7,10 @@ import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
-import com.github.cardhole.hand.domain.Hand;
-import com.github.cardhole.hand.domain.HandEntry;
 import com.github.cardhole.mana.domain.ManaPool;
 import com.github.cardhole.random.service.RandomCalculator;
 import com.github.cardhole.session.domain.Session;
+import com.github.cardhole.zone.hand.Hand;
 import com.github.cardhole.zone.library.Library;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +92,7 @@ public class Player implements Entity {
     }
 
     public int getCardCountInHand() {
-        return hand.getCardCount();
+        return hand.cardsInZone();
     }
 
     /**
@@ -102,18 +101,15 @@ public class Player implements Entity {
      * @return the cards ids from the hand that were shuffled back
      */
     public List<UUID> shuffleHandBackToDeck() {
-        final List<UUID> removedCardIds = hand.getCards().stream()
-                .map(HandEntry::getCard)
+        return hand.getCards().stream()
                 .map(card -> {
+                    hand.leaveZone(card);
+
                     library.enterZone(card);
 
                     return card.getId();
                 })
                 .toList();
-
-        hand.resetHand();
-
-        return removedCardIds;
     }
 
     public List<Card> drawCards(final int amount) {
@@ -122,7 +118,7 @@ public class Player implements Entity {
         for (int i = 1; i <= amount; i++) {
             final Card card = library.drawCard();
 
-            hand.addCard(card);
+            hand.enterZone(card);
 
             drawnCards.add(card);
         }
@@ -132,7 +128,6 @@ public class Player implements Entity {
 
     public List<UUID> whatCanBeActivated() {
         final Stream<UUID> canBeCastedFromHand = hand.getCards().stream()
-                .map(HandEntry::getCard)
                 .filter(Card::canBeCast)
                 .map(Card::getId);
 
@@ -165,12 +160,11 @@ public class Player implements Entity {
 
     public Optional<Card> getCardInHand(final UUID cardId) {
         return hand.getCards().stream()
-                .map(HandEntry::getCard)
                 .filter(card -> card.getId().equals(cardId))
                 .findFirst();
     }
 
-    public void removeCardFromHand(final UUID cardId) {
-        hand.removeCard(cardId);
+    public void removeCardFromHand(final Card card) {
+        hand.leaveZone(card);
     }
 }
