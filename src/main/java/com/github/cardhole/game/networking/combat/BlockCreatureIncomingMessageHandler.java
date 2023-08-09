@@ -32,9 +32,9 @@ public class BlockCreatureIncomingMessageHandler implements MessageHandler<Block
         final Player player = game.getPlayerForSession(session)
                 .orElseThrow();
 
-        final Card blockWith = game.getBattlefield().getCardOnBattlefield(message.blockWith())
+        final Card blockWith = game.getBattlefield().getCard(message.blockWith())
                 .orElseThrow();
-        final Card blockWhat = game.getBattlefield().getCardOnBattlefield(message.blockWhat())
+        final Card blockWhat = game.getBattlefield().getCard(message.blockWhat())
                 .orElseThrow();
 
         if (!blockWith.hasAspect(CreatureAspect.class) || !blockWhat.hasAspect(CreatureAspect.class)) {

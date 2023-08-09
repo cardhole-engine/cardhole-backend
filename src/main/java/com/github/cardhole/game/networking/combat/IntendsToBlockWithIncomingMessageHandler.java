@@ -32,7 +32,7 @@ public class IntendsToBlockWithIncomingMessageHandler implements MessageHandler<
         final Player player = game.getPlayerForSession(session)
                 .orElseThrow();
 
-        final Card card = game.getBattlefield().getCardOnBattlefield(message.cardId())
+        final Card card = game.getBattlefield().getCard(message.cardId())
                 .orElseThrow(() -> new CheatingException("Unknown card with id: " + message.cardId() + "!"));
 
         if (!card.hasAspect(CreatureAspect.class)) {

@@ -250,7 +250,7 @@ public class GameManager {
                  *          the upkeep step. (See rule 503, “Upkeep Step.”)
                  */
                 game.getBattlefield().getCards().stream()
-                        .filter(card -> card.isControlledBy(game.getActivePlayer()))
+                        .filter(Card::isControlledByActivePlayer)
                         .filter(card -> card.getAspect(PermanentAspect.class).isTapped())
                         .forEach(tappedCard -> {
                             tappedCard.getAspect(PermanentAspect.class).untap();
@@ -336,7 +336,9 @@ public class GameManager {
                 broadcastDeclareBlockers(game);
             }
             case DAMAGE -> {
-                //TODO: Damage calculation here!
+                //TODO: If attackers were blocked by more than one creature the ask the player for damage distribution, else:
+                //distributeDamageInDamageStep();
+
                 movePriority(game);
             }
             case END_COMBAT -> {
@@ -633,5 +635,12 @@ public class GameManager {
         card.getAspect(PermanentAspect.class).tap();
 
         gameNetworkingManipulator.broadcastCardTappedOnBattlefield(card);
+    }
+
+    public void distributeDamageInDamageStep() {
+        //TODO
+
+        // Get attackers who were not blocked and do damage to the players
+        // Do damage to the cards, destroy the ones that were killed
     }
 }

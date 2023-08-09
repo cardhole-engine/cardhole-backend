@@ -36,6 +36,10 @@ public interface Card extends Entity {
         return getController().equals(player);
     }
 
+    default boolean isControlledByActivePlayer() {
+        return getController().equals(getGame().getActivePlayer());
+    }
+
     Set<Supertype> getSupertype();
 
     Set<Type> getType();

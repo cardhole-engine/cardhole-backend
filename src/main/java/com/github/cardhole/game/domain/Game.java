@@ -1,6 +1,6 @@
 package com.github.cardhole.game.domain;
 
-import com.github.cardhole.battlefield.domain.Battlefield;
+import com.github.cardhole.zone.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
 import com.github.cardhole.deck.domain.Deck;
@@ -187,7 +187,7 @@ public class Game implements Entity {
     }
 
     public void putCardToBattlefield(final Card card) {
-        battlefield.addCard(card);
+        battlefield.enterZone(card);
     }
 
     public boolean isActivePlayer(final Player player) {
