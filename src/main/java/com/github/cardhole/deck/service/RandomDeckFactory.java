@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +24,8 @@ public class RandomDeckFactory {
                 .flatMap(set -> set.getCards().values().stream())
                 .toList();
 
-        final List<Class<? extends Card>> result = new LinkedList<>();
-
-        for (int i = 0; i < 60; i++) {
-            result.add(randomCalculator.randomEntryFromList(possibleCards));
-        }
-
-        return result;
+        return IntStream.range(0, 60)
+                .mapToObj(__ -> randomCalculator.randomEntryFromList(possibleCards))
+                .collect(Collectors.toList());
     }
 }
