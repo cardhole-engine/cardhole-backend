@@ -2,8 +2,7 @@ package com.github.cardhole.game.domain;
 
 import com.github.cardhole.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
-import com.github.cardhole.card.domain.creature.CreatureCard;
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
@@ -186,7 +185,7 @@ public class Game {
         return !stack.isEmpty();
     }
 
-    public void putCardToBattlefield(final PermanentCard card) {
+    public void putCardToBattlefield(final Card card) {
         battlefield.addCard(card);
     }
 
@@ -208,11 +207,11 @@ public class Game {
         return !attackers.isEmpty();
     }
 
-    public void addAttacker(final PermanentCard card) {
+    public void addAttacker(final Card card) {
         this.attackers.add(card);
     }
 
-    public boolean isAttacking(final PermanentCard card) {
+    public boolean isAttacking(final Card card) {
         return this.attackers.contains(card);
     }
 
@@ -221,13 +220,12 @@ public class Game {
                 .add(blocker);
     }
 
-    public List<UUID> canBeBlockedBy(final PermanentCard card) {
+    public List<UUID> canBeBlockedBy(final Card card) {
         return battlefield.getCards().stream()
                 .filter(cardOnBattlefield -> !cardOnBattlefield.isControlledBy(card.getController()))
                 .filter(this::isAttacking)
-                .filter(cardOnBattlefield -> cardOnBattlefield instanceof CreatureCard)
-                .map(cardOnBattlefield -> (CreatureCard) cardOnBattlefield)
-                .filter(creatureCard -> creatureCard.canBeBlockedBy(card))
+                .filter(cardOnBattlefield -> cardOnBattlefield.hasAspect(CreatureAspect.class))
+                .filter(cardOnBattlefield -> cardOnBattlefield.getAspect(CreatureAspect.class).canBeBlockedBy(card))
                 .map(Card::getId)
                 .toList();
     }

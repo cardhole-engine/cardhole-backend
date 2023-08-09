@@ -1,7 +1,11 @@
 package com.github.cardhole.card.domain.land;
 
 import com.github.cardhole.ability.LandProvideManaAbility;
+import com.github.cardhole.card.domain.AbstractCard;
 import com.github.cardhole.card.domain.CardSet;
+import com.github.cardhole.card.domain.aspect.land.LandAspect;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
+import com.github.cardhole.card.domain.cost.ManaCost;
 import com.github.cardhole.card.domain.type.CardType;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.card.domain.type.Supertype;
@@ -10,7 +14,9 @@ import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.mana.domain.Mana;
 import com.github.cardhole.player.domain.Player;
 
-public class PlainsLandCard extends LandCard {
+import java.util.Collections;
+
+public class PlainsLandCard extends AbstractCard {
 
     public PlainsLandCard(final Game game, final Player owner, final CardSet set, final int setId) {
         super(game, owner, "Plains", set, setId,
@@ -18,9 +24,18 @@ public class PlainsLandCard extends LandCard {
                         .supertype(Supertype.BASIC)
                         .type(Type.LAND)
                         .subtype(Subtype.PLAINS)
-                        .build()
+                        .build(),
+                ManaCost.NO_COST
         );
 
-        addActivatedAbility(new LandProvideManaAbility(this, Mana.WHITE));
+        addAspect(
+                PermanentAspect.builder()
+                        .activatedAbilities(Collections.singletonList(new LandProvideManaAbility(this, Mana.WHITE)))
+                        .assignedTo(this)
+                        .build(),
+                LandAspect.builder()
+                        .assignedTo(this)
+                        .build()
+        );
     }
 }

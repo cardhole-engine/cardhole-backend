@@ -2,6 +2,7 @@ package com.github.cardhole.player.domain;
 
 import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
@@ -133,8 +134,10 @@ public class Player {
                 .map(Card::getId);
 
         final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
-                .filter(card -> card.isControlledBy(this) && card.hasActivatedAbility()
-                        && card.getActivatedAbilities().stream().anyMatch(ActivatedAbility::canBeActivated))
+                .filter(card -> card.isControlledBy(this)
+                        && card.getAspect(PermanentAspect.class).getActivatedAbilities().stream()
+                        .anyMatch(ActivatedAbility::canBeActivated)
+                )
                 .map(Card::getId);
 
         return Stream.of(canBeCastedFromHand, canBeActivatedOnBattlefield)
@@ -144,14 +147,14 @@ public class Player {
 
     public List<UUID> whatCanAttack() {
         return game.getBattlefield().getCards().stream()
-                .filter(card -> card.isControlledBy(this) && card.isUntapped())
+                .filter(card -> card.isControlledBy(this) && card.getAspect(PermanentAspect.class).isUntapped())
                 .map(Card::getId)
                 .toList();
     }
 
     public List<UUID> whatCanBlock() {
         return game.getBattlefield().getCards().stream()
-                .filter(card -> card.isControlledBy(this) && card.isUntapped())
+                .filter(card -> card.isControlledBy(this) && card.getAspect(PermanentAspect.class).isUntapped())
                 .map(Card::getId)
                 .toList();
     }

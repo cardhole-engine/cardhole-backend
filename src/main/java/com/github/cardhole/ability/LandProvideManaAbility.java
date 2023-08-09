@@ -1,6 +1,6 @@
 package com.github.cardhole.ability;
 
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.mana.domain.Mana;
 
 import java.util.List;
@@ -9,7 +9,7 @@ public class LandProvideManaAbility extends TapSourceAbility {
 
     private final List<Mana> providedMana;
 
-    public LandProvideManaAbility(final PermanentCard source, final Mana... mana) {
+    public LandProvideManaAbility(final Card source, final Mana... mana) {
         super(source);
 
         this.providedMana = List.of(mana);

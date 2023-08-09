@@ -1,5 +1,6 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.card.domain.aspect.Aspect;
 import com.github.cardhole.card.domain.type.Subtype;
 import com.github.cardhole.card.domain.type.Supertype;
 import com.github.cardhole.card.domain.type.Type;
@@ -32,11 +33,9 @@ public interface Card {
 
     boolean canBeCast();
 
-    default void cast(Target target) {
-    }
+    void cast(Target target);
 
-    default void resolve(Target target) {
-    }
+    void resolve(Target target);
 
     default boolean isControlledBy(Player player) {
         return getController().equals(player);
@@ -47,4 +46,8 @@ public interface Card {
     Set<Type> getType();
 
     Set<Subtype> getSubtype();
+
+    boolean hasAspect(Class<? extends Aspect> aspect);
+
+    <T extends Aspect> T getAspect(Class<T> aspectClass);
 }

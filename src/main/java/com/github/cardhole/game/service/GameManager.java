@@ -2,8 +2,7 @@ package com.github.cardhole.game.service;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.Target;
-import com.github.cardhole.card.domain.land.LandCard;
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
@@ -252,9 +251,9 @@ public class GameManager {
                  */
                 game.getBattlefield().getCards().stream()
                         .filter(card -> card.isControlledBy(game.getActivePlayer()))
-                        .filter(PermanentCard::isTapped)
+                        .filter(card -> card.getAspect(PermanentAspect.class).isTapped())
                         .forEach(tappedCard -> {
-                            tappedCard.setTapped(false);
+                            tappedCard.getAspect(PermanentAspect.class).untap();
 
                             gameNetworkingManipulator.broadcastCardUntappedOnBattlefield(tappedCard);
                         });
@@ -494,7 +493,7 @@ public class GameManager {
         );
     }
 
-    public void refreshWhatCanBlockedBy(final PermanentCard card) {
+    public void refreshWhatCanBlockedBy(final Card card) {
         gameNetworkingManipulator.sendMessageToPlayer(card.getController(),
                 RefreshCanBeCastAndActivatedListOutgoingMessage.builder()
                         .canBeCastOrActivated(card.getGame().canBeBlockedBy(card))
@@ -502,7 +501,7 @@ public class GameManager {
         );
     }
 
-    public void markCardAsAttacking(final PermanentCard card) {
+    public void markCardAsAttacking(final Card card) {
         gameNetworkingManipulator.sendMessageToEveryone(card.getGame(),
                 MarkCardIsAttackingOutgoingMessage.builder()
                         .cardId(card.getId())
@@ -510,7 +509,7 @@ public class GameManager {
         );
     }
 
-    public void markCardAsDefending(final PermanentCard blocker, final PermanentCard blocked) {
+    public void markCardAsDefending(final Card blocker, final Card blocked) {
         gameNetworkingManipulator.sendMessageToEveryone(blocker.getGame(),
                 MarkCardIsBlockingOutgoingMessage.builder()
                         .blocker(blocker.getId())
@@ -563,7 +562,7 @@ public class GameManager {
         refreshWhatCanBeCastOrActivated(card.getController());
     }
 
-    public void putCardToStack(final PermanentCard card) {
+    public void putCardToStack(final Card card) {
         final Game game = card.getGame();
 
         game.getStack().addCardToStack(card);
@@ -590,7 +589,7 @@ public class GameManager {
      *
      * @param card the card that should be cast
      */
-    public void putLandCardToPlayersBattlefield(final LandCard card) {
+    public void putLandCardToPlayersBattlefield(final Card card) {
         card.getGame().setLandCastedThisTurn(true);
 
         /*
@@ -608,7 +607,7 @@ public class GameManager {
      *
      * @param card the card that should be cast
      */
-    public void putCardToPlayersBattlefield(final PermanentCard card) {
+    public void putCardToPlayersBattlefield(final Card card) {
         final Player controller = card.getController();
 
         card.getGame().putCardToBattlefield(card);
@@ -630,9 +629,9 @@ public class GameManager {
         gameNetworkingManipulator.broadcastPlayerHandSize(card.getOwner());
     }
 
-    public void tapCardOnBattlefield(final PermanentCard permanentCard) {
-        permanentCard.setTapped(true);
+    public void tapCardOnBattlefield(final Card card) {
+        card.getAspect(PermanentAspect.class).tap();
 
-        gameNetworkingManipulator.broadcastCardTappedOnBattlefield(permanentCard);
+        gameNetworkingManipulator.broadcastCardTappedOnBattlefield(card);
     }
 }

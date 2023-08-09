@@ -1,7 +1,7 @@
 package com.github.cardhole.game.networking;
 
 import com.github.cardhole.card.domain.Card;
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
@@ -149,7 +149,7 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardEnterToBattlefield(final PermanentCard card) {
+    public void broadcastCardEnterToBattlefield(final Card card) {
         sendMessageToEveryone(card.getGame(),
                 CardEnterToBattlefieldOutgoingMessage.builder()
                         .id(card.getId())
@@ -157,7 +157,7 @@ public class GameNetworkingManipulator {
                         .ownerId(card.getController().getId())
                         .set(card.getSet().name())
                         .setId(card.getSetId())
-                        .activatedAbilities(card.getActivatedAbilities().stream()
+                        .activatedAbilities(card.getAspect(PermanentAspect.class).getActivatedAbilities().stream()
                                 .map(ability -> CardEnterToBattlefieldOutgoingMessage.ActivatedActivity.builder()
                                         .id(ability.getId())
                                         .build()

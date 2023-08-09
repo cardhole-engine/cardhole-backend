@@ -1,5 +1,6 @@
 package com.github.cardhole.card.domain;
 
+import com.github.cardhole.card.domain.aspect.Aspect;
 import com.github.cardhole.card.domain.cost.ManaCost;
 import com.github.cardhole.card.domain.type.CardType;
 import com.github.cardhole.card.domain.type.Subtype;
@@ -10,6 +11,8 @@ import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.player.domain.Player;
 import lombok.Getter;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +29,8 @@ public abstract class AbstractCard implements Card {
     protected final CardType cardType;
 
     protected final ManaCost manaCost;
+
+    protected final List<Aspect> aspects;
 
     /*
      * The player who (for purposes of the game) a card, permanent, token, or spell belongs to. See rules 108.3, 110.2,
@@ -81,11 +86,20 @@ public abstract class AbstractCard implements Card {
         this.cardType = cardType;
 
         this.manaCost = manaCost;
+
+        this.aspects = new LinkedList<>();
     }
 
     @Override
     public boolean canBeCast() {
         if (!controller.getManaPool().hasManaAvailable(manaCost)) {
+            return false;
+        }
+
+        final boolean canBeCastBecauseOfAspects = this.aspects.stream()
+                .allMatch(Aspect::canBeCast);
+
+        if (!canBeCastBecauseOfAspects) {
             return false;
         }
 
@@ -110,5 +124,41 @@ public abstract class AbstractCard implements Card {
     @Override
     public Set<Subtype> getSubtype() {
         return cardType.getSubtype();
+    }
+
+    @Override
+    public void cast(final Target target) {
+        aspects.forEach(aspect -> aspect.cast(target));
+    }
+
+    @Override
+    public void resolve(final Target target) {
+        aspects.forEach(aspect -> aspect.resolve(target));
+    }
+
+    @Override
+    public boolean hasAspect(final Class<? extends Aspect> aspect) {
+        return aspects.stream()
+                .anyMatch(aspect::isInstance);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Aspect> T getAspect(final Class<T> aspectClass) {
+        return aspects.stream()
+                .filter(aspectClass::isInstance)
+                .map(asp -> (T) asp)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public void addAspect(final Aspect... aspects) {
+        for (Aspect aspect : aspects) {
+            if (!aspect.isAttachableTo(this)) {
+                throw new IllegalStateException("Can't attach aspect to card! Aspect to be attached: " + aspect
+                        + " to card: " + this + ".");
+            }
+
+            this.aspects.add(aspect);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.github.cardhole.game.networking.combat;
 
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.combat.domain.DeclareAttackerIncomingMessage;
@@ -28,14 +29,18 @@ public class DeclareAttackerIncomingMessageHandler implements MessageHandler<Dec
         final Player player = game.getPlayerForSession(session)
                 .orElseThrow();
 
-        final PermanentCard card = game.getBattlefield().getCardOnBattlefield(message.cardId())
+        final Card card = game.getBattlefield().getCardOnBattlefield(message.cardId())
                 .orElseThrow(() -> new CheatingException("Unknown card with id: " + message.cardId() + "!"));
 
         if (!card.isControlledBy(player)) {
             throw new CheatingException("Player tried to attack with a card that he/she doesn't control!");
         }
 
-        if (card.isTapped()) {
+        if (!card.hasAspect(PermanentAspect.class)) {
+            throw new CheatingException("Attacker card is not a permanent!");
+        }
+
+        if (card.getAspect(PermanentAspect.class).isTapped()) {
             throw new CheatingException("Player tried to attack with a card that is tapped!");
         }
 

@@ -1,6 +1,7 @@
 package com.github.cardhole.game.networking.combat;
 
-import com.github.cardhole.card.domain.permanent.PermanentCard;
+import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
@@ -31,10 +32,14 @@ public class BlockCreatureIncomingMessageHandler implements MessageHandler<Block
         final Player player = game.getPlayerForSession(session)
                 .orElseThrow();
 
-        final PermanentCard blockWith = game.getBattlefield().getCardOnBattlefield(message.blockWith())
+        final Card blockWith = game.getBattlefield().getCardOnBattlefield(message.blockWith())
                 .orElseThrow();
-        final PermanentCard blockWhat = game.getBattlefield().getCardOnBattlefield(message.blockWhat())
+        final Card blockWhat = game.getBattlefield().getCardOnBattlefield(message.blockWhat())
                 .orElseThrow();
+
+        if (!blockWith.hasAspect(CreatureAspect.class) || !blockWhat.hasAspect(CreatureAspect.class)) {
+            throw new CheatingException("The blocker or the blocked is not a creature!");
+        }
 
         if (game.isActivePlayer(player)) {
             throw new CheatingException("The active player tried to assign blockers!");
