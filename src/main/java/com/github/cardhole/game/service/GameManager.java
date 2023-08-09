@@ -337,6 +337,7 @@ public class GameManager {
                 broadcastDeclareBlockers(game);
             }
             case DAMAGE -> {
+                //TODO: Damage calculation here!
                 movePriority(game);
             }
             case END_COMBAT -> {

@@ -99,6 +99,11 @@ public class QuestionResponseIncomingMessageHandler implements MessageHandler<Qu
 
                 game.setWaitingForAttackers(false);
             }
+            case "DECLARE_BLOCKERS" -> {
+                gameManager.movePriority(game);
+
+                game.setWaitingForBlockers(false);
+            }
             case "CHOOSE_ATTACKER" -> {
                 gameNetworkingManipulator.sendMessageToPlayer(player,
                         ShowSingleQuestionGameMessageOutgoingMessage.builder()
