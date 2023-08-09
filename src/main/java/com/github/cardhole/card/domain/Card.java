@@ -8,6 +8,7 @@ import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.player.domain.Player;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Card extends Entity {
@@ -48,5 +49,27 @@ public interface Card extends Entity {
 
     boolean hasAspect(Class<? extends Aspect> aspect);
 
+    /**
+     * Returns the first aspect that is from the provided aspect class. If the aspect is not present on the class, then
+     * an exception is thrown.
+     *
+     * @param aspectClass the type of the aspect to get
+     * @param <T>         the type of the aspect
+     * @return the aspect instance
+     */
     <T extends Aspect> T getAspect(Class<T> aspectClass);
+
+    /**
+     * Returns every aspect that is from the provided aspect class. If the aspect is not present on the class, then
+     * an exception is thrown.
+     *
+     * @param aspectClass the type of the aspect to get
+     * @param <T>         the type of the aspect
+     * @return the aspect instance
+     */
+    <T extends Aspect> List<T> getAspects(Class<T> aspectClass);
+
+    void addAspect(final Aspect... aspects);
+
+    <T extends Aspect> void removeAspect(Class<T> aspectClass);
 }

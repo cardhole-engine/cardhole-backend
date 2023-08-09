@@ -1,5 +1,7 @@
 package com.github.cardhole.zone.battlefield.domain;
 
+import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.zone.AbstractZone;
 import lombok.Getter;
 
@@ -24,4 +26,32 @@ import lombok.Getter;
  */
 @Getter
 public class Battlefield extends AbstractZone {
+
+    @Override
+    public void enterZone(final Card card) {
+        super.enterZone(card);
+
+        /*
+         * 110.1. A permanent is a card or token on the battlefield. A permanent remains on the battlefield
+         * indefinitely. A card or token becomes a permanent as it enters the battlefield and it stops being a permanent
+         *  as it’s moved to another zone by an effect or rule.
+         */
+        card.addAspect(
+                PermanentAspect.builder()
+                        .assignedTo(card)
+                        .build()
+        );
+    }
+
+    @Override
+    public void leaveZone(final Card card) {
+        super.leaveZone(card);
+
+        /*
+         * 110.1. A permanent is a card or token on the battlefield. A permanent remains on the battlefield
+         * indefinitely. A card or token becomes a permanent as it enters the battlefield and it stops being a permanent
+         *  as it’s moved to another zone by an effect or rule.
+         */
+        card.removeAspect(PermanentAspect.class);
+    }
 }

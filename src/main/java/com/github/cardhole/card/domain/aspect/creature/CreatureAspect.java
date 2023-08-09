@@ -3,7 +3,6 @@ package com.github.cardhole.card.domain.aspect.creature;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.Target;
 import com.github.cardhole.card.domain.aspect.AbstractAspect;
-import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
@@ -24,10 +23,7 @@ public class CreatureAspect extends AbstractAspect {
 
     @Override
     public boolean isAttachableTo(final Card card) {
-        if (!card.hasAspect(PermanentAspect.class)) {
-            throw new IllegalStateException("CreatureAspect can only be attached to a card that has a PermanentAspect"
-                    + " attached to it.");
-        } else if (card.hasAspect(CreatureAspect.class)) {
+        if (card.hasAspect(CreatureAspect.class)) {
             throw new IllegalStateException("The card is already a creature card!");
         }
 

@@ -1,7 +1,7 @@
 package com.github.cardhole.game.networking.ability;
 
 import com.github.cardhole.ability.ActivatedAbility;
-import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
+import com.github.cardhole.card.domain.aspect.ability.HasActivatedAbilityAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.ability.domain.UseActivatedAbilityIncomingMessage;
 import com.github.cardhole.game.service.GameManager;
@@ -30,7 +30,8 @@ public class UseActivatedAbilityIncomingMessageHandler implements MessageHandler
 
         final ActivatedAbility activatedAbility = game.getBattlefield().getCards().stream()
                 .filter(card -> card.getOwner().getSession().equals(session))
-                .flatMap(card -> card.getAspect(PermanentAspect.class).getActivatedAbilities().stream())
+                .flatMap(card -> card.getAspects(HasActivatedAbilityAspect.class).stream())
+                .map(HasActivatedAbilityAspect::getActivatedAbility)
                 .filter(ability -> ability.getId().equals(useActivatedAbilityIncomingMessage.abilityId()))
                 .findFirst()
                 .orElseThrow();

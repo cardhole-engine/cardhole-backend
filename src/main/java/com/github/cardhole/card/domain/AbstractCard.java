@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
 public abstract class AbstractCard implements Card {
@@ -87,7 +88,7 @@ public abstract class AbstractCard implements Card {
 
         this.manaCost = manaCost;
 
-        this.aspects = new LinkedList<>();
+        this.aspects = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -151,6 +152,15 @@ public abstract class AbstractCard implements Card {
                 .orElseThrow();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Aspect> List<T> getAspects(final Class<T> aspectClass) {
+        return aspects.stream()
+                .filter(aspectClass::isInstance)
+                .map(asp -> (T) asp)
+                .toList();
+    }
+
+    @Override
     public void addAspect(final Aspect... aspects) {
         for (Aspect aspect : aspects) {
             if (!aspect.isAttachableTo(this)) {
@@ -160,5 +170,10 @@ public abstract class AbstractCard implements Card {
 
             this.aspects.add(aspect);
         }
+    }
+
+    @Override
+    public <T extends Aspect> void removeAspect(final Class<T> aspectClass) {
+        aspects.removeIf(aspectClass::isInstance);
     }
 }

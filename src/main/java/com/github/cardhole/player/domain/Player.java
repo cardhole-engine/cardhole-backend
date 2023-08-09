@@ -2,6 +2,7 @@ package com.github.cardhole.player.domain;
 
 import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.card.domain.aspect.ability.HasActivatedAbilityAspect;
 import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.entity.domain.Entity;
@@ -136,7 +137,8 @@ public class Player implements Entity {
 
         final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
                 .filter(card -> card.isControlledBy(this)
-                        && card.getAspect(PermanentAspect.class).getActivatedAbilities().stream()
+                        && card.getAspects(HasActivatedAbilityAspect.class).stream()
+                        .map(HasActivatedAbilityAspect::getActivatedAbility)
                         .anyMatch(ActivatedAbility::canBeActivated)
                 )
                 .map(Card::getId);
