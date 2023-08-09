@@ -28,7 +28,7 @@ public class UseActivatedAbilityIncomingMessageHandler implements MessageHandler
         final Player player = game.getPlayerForSession(session)
                 .orElseThrow();
 
-        final ActivatedAbility activatedAbility = game.getBattlefield().getCards().stream()
+        final ActivatedAbility activatedAbility = game.getBattlefield().getObjects().stream()
                 .filter(card -> card.getOwner().getSession().equals(session))
                 .flatMap(card -> card.getAspects(HasActivatedAbilityAspect.class).stream())
                 .map(HasActivatedAbilityAspect::getActivatedAbility)

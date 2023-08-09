@@ -222,6 +222,7 @@ public class GameNetworkingManipulator {
         );
     }
 
+    //TODO: Remove game object, not a card!
     public void broadcastCardRemovedFromStack(final Card card) {
         sendMessageToEveryone(card.getGame(),
                 CardRemovedFromStackOutgoingMessage.builder()

@@ -28,30 +28,30 @@ import lombok.Getter;
 public class Battlefield extends AbstractZone<Card> {
 
     @Override
-    public void enterZone(final Card card) {
-        super.enterZone(card);
+    public void enterZone(final Card gameObject) {
+        super.enterZone(gameObject);
 
         /*
          * 110.1. A permanent is a card or token on the battlefield. A permanent remains on the battlefield
          * indefinitely. A card or token becomes a permanent as it enters the battlefield and it stops being a permanent
          *  as it’s moved to another zone by an effect or rule.
          */
-        card.addAspect(
+        gameObject.addAspect(
                 PermanentAspect.builder()
-                        .assignedTo(card)
+                        .assignedTo(gameObject)
                         .build()
         );
     }
 
     @Override
-    public void leaveZone(final Card card) {
-        super.leaveZone(card);
+    public void leaveZone(final Card gameObject) {
+        super.leaveZone(gameObject);
 
         /*
          * 110.1. A permanent is a card or token on the battlefield. A permanent remains on the battlefield
          * indefinitely. A card or token becomes a permanent as it enters the battlefield and it stops being a permanent
          *  as it’s moved to another zone by an effect or rule.
          */
-        card.removeAspect(PermanentAspect.class);
+        gameObject.removeAspect(PermanentAspect.class);
     }
 }

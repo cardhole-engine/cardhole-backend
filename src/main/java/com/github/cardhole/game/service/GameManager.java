@@ -14,9 +14,9 @@ import com.github.cardhole.game.networking.message.domain.ShowDualQuestionGameMe
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSingleQuestionGameMessageOutgoingMessage;
 import com.github.cardhole.mana.domain.Mana;
+import com.github.cardhole.object.domain.GameObject;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
-import com.github.cardhole.stack.domain.StackEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -249,7 +249,7 @@ public class GameManager {
                  *          will be held until the next time a player would receive priority, which is usually during
                  *          the upkeep step. (See rule 503, “Upkeep Step.”)
                  */
-                game.getBattlefield().getCards().stream()
+                game.getBattlefield().getObjects().stream()
                         .filter(Card::isControlledByActivePlayer)
                         .filter(card -> card.getAspect(PermanentAspect.class).isTapped())
                         .forEach(tappedCard -> {
@@ -567,22 +567,27 @@ public class GameManager {
     public void putCardToStack(final Card card) {
         final Game game = card.getGame();
 
-        game.getStack().addCardToStack(card);
+        game.getStack().enterZone(card);
 
         gameNetworkingManipulator.broadcastCardPutToStack(card);
     }
 
     public void removeCardFromStack(final Game game) {
-        final StackEntry stackEntry = game.getStack().removeActiveEntry()
+        final GameObject gameObject = game.getStack().removeActiveEntry()
                 .orElseThrow();
 
         if (game.isStackEmpty()) {
             game.setStackWasCleared(true);
         }
 
-        gameNetworkingManipulator.broadcastCardRemovedFromStack(stackEntry.getCard());
+        if(gameObject instanceof Card card) {
+            gameNetworkingManipulator.broadcastCardRemovedFromStack(card);
 
-        stackEntry.getCard().resolve(stackEntry.getTarget());
+            //TODO: Targetting
+            card.resolve(null);
+        } else {
+            //TODO: Other than cards
+        }
     }
 
     /**

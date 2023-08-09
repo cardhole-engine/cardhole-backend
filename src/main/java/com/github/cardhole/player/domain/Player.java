@@ -101,7 +101,7 @@ public class Player implements Entity {
      * @return the cards ids from the hand that were shuffled back
      */
     public List<UUID> shuffleHandBackToDeck() {
-        return hand.getCards().stream()
+        return hand.getObjects().stream()
                 .map(card -> {
                     hand.leaveZone(card);
 
@@ -127,11 +127,11 @@ public class Player implements Entity {
     }
 
     public List<UUID> whatCanBeActivated() {
-        final Stream<UUID> canBeCastedFromHand = hand.getCards().stream()
+        final Stream<UUID> canBeCastedFromHand = hand.getObjects().stream()
                 .filter(Card::canBeCast)
                 .map(Card::getId);
 
-        final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getCards().stream()
+        final Stream<UUID> canBeActivatedOnBattlefield = game.getBattlefield().getObjects().stream()
                 .filter(card -> card.isControlledBy(this)
                         && card.getAspects(HasActivatedAbilityAspect.class).stream()
                         .map(HasActivatedAbilityAspect::getActivatedAbility)
@@ -145,21 +145,21 @@ public class Player implements Entity {
     }
 
     public List<UUID> whatCanAttack() {
-        return game.getBattlefield().getCards().stream()
+        return game.getBattlefield().getObjects().stream()
                 .filter(card -> card.isControlledBy(this) && card.getAspect(PermanentAspect.class).isUntapped())
                 .map(Card::getId)
                 .toList();
     }
 
     public List<UUID> whatCanBlock() {
-        return game.getBattlefield().getCards().stream()
+        return game.getBattlefield().getObjects().stream()
                 .filter(card -> card.isControlledBy(this) && card.getAspect(PermanentAspect.class).isUntapped())
                 .map(Card::getId)
                 .toList();
     }
 
     public Optional<Card> getCardInHand(final UUID cardId) {
-        return hand.getCards().stream()
+        return hand.getObjects().stream()
                 .filter(card -> card.getId().equals(cardId))
                 .findFirst();
     }

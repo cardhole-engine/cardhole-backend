@@ -1,4 +1,4 @@
-package com.github.cardhole.zone.library.service;
+package com.github.cardhole.deck.service;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.CardSet;

@@ -6,8 +6,7 @@ import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
-import com.github.cardhole.stack.domain.Stack;
-import com.github.cardhole.stack.domain.StackEntry;
+import com.github.cardhole.zone.stack.Stack;
 import com.github.cardhole.zone.battlefield.domain.Battlefield;
 import lombok.Getter;
 import lombok.Setter;
@@ -158,15 +157,12 @@ public class Game implements Entity {
          *    ends.
          */
         if (isStackActive()) {
-            final StackEntry stackEntry = stack.getActiveEntry()
-                    .orElseThrow();
-
-            if (stackEntry.isOpponentPassedPriority()) {
+            if (stack.isOpponentPassedPriority()) {
                 //TODO: Let the opponent act again on next stack entry, even if he already act on it.
 
                 gameManager.removeCardFromStack(opponent.getGame());
             } else {
-                stackEntry.setOpponentPassedPriority(true);
+                stack.setOpponentPassedPriority(true);
 
                 priorityPlayer = opponent;
 
@@ -240,7 +236,7 @@ public class Game implements Entity {
     }
 
     public List<UUID> canBeBlockedBy(final Card card) {
-        return battlefield.getCards().stream()
+        return battlefield.getObjects().stream()
                 .filter(cardOnBattlefield -> !cardOnBattlefield.isControlledBy(card.getController()))
                 .filter(this::isAttacking)
                 .filter(cardOnBattlefield -> cardOnBattlefield.hasAspect(CreatureAspect.class))

@@ -11,6 +11,6 @@ public class Library extends AbstractZone<Card> {
     private final RandomCalculator randomCalculator;
 
     public Card drawCard() {
-        return cards.remove(randomCalculator.randomIntBetween(0, cards.size() - 1));
+        return objects.remove(randomCalculator.randomIntBetween(0, objects.size() - 1));
     }
 }

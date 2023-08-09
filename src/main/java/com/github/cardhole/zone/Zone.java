@@ -1,6 +1,5 @@
 package com.github.cardhole.zone;
 
-import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.object.domain.GameObject;
 
 import java.util.Optional;
@@ -86,13 +85,15 @@ import java.util.UUID;
  */
 public interface Zone<T extends GameObject> {
 
-    Optional<T> getCard(UUID cardId);
+    Optional<T> getGameObject(UUID cardId);
 
     void enterZone(T card);
 
     void leaveZone(T card);
 
     boolean isInZone(T card);
+
+    boolean isEmpty();
 
     int cardsInZone();
 }
