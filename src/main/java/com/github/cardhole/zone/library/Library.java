@@ -6,7 +6,7 @@ import com.github.cardhole.zone.AbstractZone;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class Library extends AbstractZone {
+public class Library extends AbstractZone<Card> {
 
     private final RandomCalculator randomCalculator;
 

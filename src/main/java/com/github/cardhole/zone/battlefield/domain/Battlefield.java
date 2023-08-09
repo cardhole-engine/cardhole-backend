@@ -25,7 +25,7 @@ import lombok.Getter;
  *         land card becomes after it moves to the battlefield as a result of being played this way.
  */
 @Getter
-public class Battlefield extends AbstractZone {
+public class Battlefield extends AbstractZone<Card> {
 
     @Override
     public void enterZone(final Card card) {

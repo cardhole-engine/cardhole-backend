@@ -1,11 +1,13 @@
 package com.github.cardhole.stack.domain;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.object.domain.GameObject;
+import com.github.cardhole.zone.AbstractZone;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
-public class Stack {
+public class Stack extends AbstractZone<GameObject> {
 
     private final LinkedList<StackEntry> stackEntries = new LinkedList<>();
 

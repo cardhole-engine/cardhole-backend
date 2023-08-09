@@ -6,12 +6,13 @@ import com.github.cardhole.card.domain.type.Supertype;
 import com.github.cardhole.card.domain.type.Type;
 import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.domain.Game;
+import com.github.cardhole.object.domain.GameObject;
 import com.github.cardhole.player.domain.Player;
 
 import java.util.List;
 import java.util.Set;
 
-public interface Card extends Entity {
+public interface Card extends GameObject {
 
     String getName();
 

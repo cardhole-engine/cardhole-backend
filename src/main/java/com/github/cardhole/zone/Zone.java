@@ -1,6 +1,7 @@
 package com.github.cardhole.zone;
 
 import com.github.cardhole.card.domain.Card;
+import com.github.cardhole.object.domain.GameObject;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -83,15 +84,15 @@ import java.util.UUID;
  * 400.12. Some effects instruct a player to do something to a zone (such as “Shuffle your hand into your library”).
  *     That action is performed on all cards in that zone. The zone itself is not affected.
  */
-public interface Zone {
+public interface Zone<T extends GameObject> {
 
-    Optional<Card> getCard(UUID cardId);
+    Optional<T> getCard(UUID cardId);
 
-    void enterZone(Card card);
+    void enterZone(T card);
 
-    void leaveZone(Card card);
+    void leaveZone(T card);
 
-    boolean isInZone(Card card);
+    boolean isInZone(T card);
 
     int cardsInZone();
 }
