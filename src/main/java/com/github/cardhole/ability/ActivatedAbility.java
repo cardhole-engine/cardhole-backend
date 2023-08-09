@@ -2,12 +2,9 @@ package com.github.cardhole.ability;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
+import com.github.cardhole.entity.domain.Entity;
 
-import java.util.UUID;
-
-public interface ActivatedAbility {
-
-    UUID getId();
+public interface ActivatedAbility extends Entity {
 
     void activate();
 

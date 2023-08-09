@@ -4,6 +4,7 @@ import com.github.cardhole.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
 import com.github.cardhole.deck.domain.Deck;
+import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
-public class Game {
+public class Game implements Entity {
 
     private final UUID id;
     private final String name;

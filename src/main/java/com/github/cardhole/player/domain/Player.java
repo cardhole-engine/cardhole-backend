@@ -4,6 +4,7 @@ import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
 import com.github.cardhole.deck.domain.Deck;
+import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.hand.domain.Hand;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class Player {
+public class Player implements Entity {
 
     @Getter
     private final UUID id;

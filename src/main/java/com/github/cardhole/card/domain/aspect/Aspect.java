@@ -2,8 +2,9 @@ package com.github.cardhole.card.domain.aspect;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.Target;
+import com.github.cardhole.entity.domain.Entity;
 
-public interface Aspect {
+public interface Aspect extends Entity {
 
     boolean isAttachableTo(Card card);
 
