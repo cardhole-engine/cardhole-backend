@@ -2,7 +2,6 @@ package com.github.cardhole.session.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cardhole.networking.domain.Message;
-import com.github.cardhole.player.domain.Player;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

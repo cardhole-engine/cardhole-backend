@@ -1,19 +1,25 @@
 package com.github.cardhole.game.domain;
 
-import com.github.cardhole.zone.battlefield.domain.Battlefield;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
-import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.service.GameManager;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.session.domain.Session;
 import com.github.cardhole.stack.domain.Stack;
 import com.github.cardhole.stack.domain.StackEntry;
+import com.github.cardhole.zone.battlefield.domain.Battlefield;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
@@ -80,8 +86,20 @@ public class Game implements Entity {
         return players.size() < 2;
     }
 
-    public Player createPlayer(final Session session, final Deck deck) {
-        final Player player = new Player(session, this, deck, 20);
+    public Player createPlayer(final Session session, final List<Class<? extends Card>> cardsInLibrary) {
+        final Player player = new Player(session, this, 20);
+
+        cardsInLibrary.stream()
+                .map(cardBlueprint -> {
+                    try {
+                        return cardBlueprint.getConstructor(Game.class, Player.class)
+                                .newInstance(this, player);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .forEach(card -> player.getLibrary().enterZone(card));
 
         this.players.add(player);
 

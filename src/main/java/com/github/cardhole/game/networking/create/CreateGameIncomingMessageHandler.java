@@ -1,6 +1,6 @@
 package com.github.cardhole.game.networking.create;
 
-import com.github.cardhole.deck.service.RandomDeckFactory;
+import com.github.cardhole.zone.library.service.RandomDeckFactory;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.networking.GameNetworkingManipulator;
 import com.github.cardhole.game.networking.create.domain.CreateGameIncomingMessage;

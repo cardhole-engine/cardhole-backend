@@ -92,4 +92,6 @@ public interface Zone {
     void leaveZone(Card card);
 
     boolean isInZone(Card card);
+
+    int cardsInZone();
 }

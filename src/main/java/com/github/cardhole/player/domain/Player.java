@@ -4,20 +4,25 @@ import com.github.cardhole.ability.ActivatedAbility;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.aspect.ability.HasActivatedAbilityAspect;
 import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
-import com.github.cardhole.deck.domain.Deck;
 import com.github.cardhole.entity.domain.Entity;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
 import com.github.cardhole.hand.domain.Hand;
 import com.github.cardhole.hand.domain.HandEntry;
 import com.github.cardhole.mana.domain.ManaPool;
+import com.github.cardhole.random.service.RandomCalculator;
 import com.github.cardhole.session.domain.Session;
+import com.github.cardhole.zone.library.Library;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -31,7 +36,9 @@ public class Player implements Entity {
     private final Session session;
 
     private final Hand hand;
-    private final Deck deck;
+
+    @Getter
+    private final Library library;
 
     @Getter
     private final Game game;
@@ -56,12 +63,12 @@ public class Player implements Entity {
     @Getter
     private final Map<Step, Boolean> stopAtStepInOpponentTurn;
 
-    public Player(final Session session, final Game game, final Deck deck, final int life) {
+    public Player(final Session session, final Game game, final int life) {
         this.id = UUID.randomUUID();
 
         this.session = session;
         this.game = game;
-        this.deck = deck;
+        this.library = new Library(new RandomCalculator());
         this.life = life;
 
         this.hand = new Hand();
@@ -82,7 +89,7 @@ public class Player implements Entity {
     }
 
     public int getCardCountInDeck() {
-        return deck.getCardCount();
+        return library.cardsInZone();
     }
 
     public int getCardCountInHand() {
@@ -98,7 +105,7 @@ public class Player implements Entity {
         final List<UUID> removedCardIds = hand.getCards().stream()
                 .map(HandEntry::getCard)
                 .map(card -> {
-                    deck.addCard(card.getClass());
+                    library.enterZone(card);
 
                     return card.getId();
                 })
@@ -113,17 +120,11 @@ public class Player implements Entity {
         final List<Card> drawnCards = new LinkedList<>();
 
         for (int i = 1; i <= amount; i++) {
-            try {
-                final Card card = deck.drawCard().getConstructor(Game.class, Player.class)
-                        .newInstance(game, this);
+            final Card card = library.drawCard();
 
-                hand.addCard(card);
+            hand.addCard(card);
 
-                drawnCards.add(card);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
+            drawnCards.add(card);
         }
 
         return drawnCards;

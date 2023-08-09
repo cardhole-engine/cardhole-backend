@@ -34,4 +34,9 @@ public abstract class AbstractZone implements Zone {
     public boolean isInZone(final Card card) {
         return cards.contains(card);
     }
+
+    @Override
+    public int cardsInZone() {
+        return cards.size();
+    }
 }
