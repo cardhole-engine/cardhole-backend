@@ -33,6 +33,10 @@ public class IntendsToBlockWithIncomingMessageHandler implements MessageHandler<
         final PermanentCard card = game.getBattlefield().getCardOnBattlefield(message.cardId())
                 .orElseThrow(() -> new CheatingException("Unknown card with id: " + message.cardId() + "!"));
 
+        if (game.isActivePlayer(player)) {
+            throw new CheatingException("The active player tried to assign blockers!");
+        }
+
         if (!card.isControlledBy(player)) {
             throw new CheatingException("Player tried to attack with a card that he/she doesn't control!");
         }

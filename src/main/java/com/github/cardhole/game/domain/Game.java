@@ -26,6 +26,7 @@ public class Game {
     private final Stack stack;
 
     private final List<Card> attackers;
+    private final Map<Card, List<Card>> blockers;
 
     private final GameManager gameManager;
 
@@ -64,6 +65,7 @@ public class Game {
 
         this.players = new CopyOnWriteArrayList<>();
         this.attackers = new LinkedList<>();
+        this.blockers = new HashMap<>();
         this.battlefield = new Battlefield();
         this.stack = new Stack();
 
@@ -212,6 +214,11 @@ public class Game {
 
     public boolean isAttacking(final PermanentCard card) {
         return this.attackers.contains(card);
+    }
+
+    public void addBlocker(final Card blocked, final Card blocker) {
+        this.blockers.computeIfAbsent(blocked, __ -> new LinkedList<>())
+                .add(blocker);
     }
 
     public List<UUID> canBeBlockedBy(final PermanentCard card) {
