@@ -47,7 +47,7 @@ public class DeclareAttackerIncomingMessageHandler implements MessageHandler<Dec
         if (game.getStep() == Step.ATTACK && game.isActivePlayer(player) && game.isWaitingForAttackers()) {
             game.addAttacker(card);
 
-            gameManager.tapCardOnBattlefield(card);
+            gameManager.tapCard(card);
             gameManager.refreshWhatCanAttack(player);
             gameManager.markCardAsAttacking(card);
         } else {

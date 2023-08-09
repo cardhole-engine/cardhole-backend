@@ -193,7 +193,7 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardTappedOnBattlefield(final Card card) {
+    public void broadcastCardTapped(final Card card) {
         sendMessageToEveryone(card.getGame(),
                 CardTappedOnBattlefieldOutgoingMessage.builder()
                         .cardId(card.getId())

@@ -11,7 +11,7 @@ public abstract class TapSourceAbility extends AbstractActivatedAbility {
 
     @Override
     public void activate() {
-        source.getGame().getGameManager().tapCardOnBattlefield(source);
+        source.getGame().getGameManager().tapCard(source);
     }
 
     @Override

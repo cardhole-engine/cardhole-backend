@@ -631,10 +631,19 @@ public class GameManager {
         gameNetworkingManipulator.broadcastPlayerHandSize(card.getOwner());
     }
 
-    public void tapCardOnBattlefield(final Card card) {
+    /**
+     * Tap a card. Only permanent cards can be tapped, and they must be on the battlefield.
+     *
+     * @param card the card to tap
+     */
+    public void tapCard(final Card card) {
+        if (!card.getGame().getBattlefield().isInZone(card)) {
+            throw new IllegalStateException("Only card that is in the battlefield can be tapped!");
+        }
+
         card.getAspect(PermanentAspect.class).tap();
 
-        gameNetworkingManipulator.broadcastCardTappedOnBattlefield(card);
+        gameNetworkingManipulator.broadcastCardTapped(card);
     }
 
     public void distributeDamageInDamageStep() {
