@@ -223,15 +223,19 @@ public class Game implements Entity {
     }
 
     public void addAttacker(final Card card) {
-        this.attackers.add(card);
+        attackers.add(card);
     }
 
     public boolean isAttacking(final Card card) {
-        return this.attackers.contains(card);
+        return attackers.contains(card);
+    }
+
+    public boolean isBlocked(final Card card) {
+        return blockers.containsKey(card);
     }
 
     public void addBlocker(final Card blocked, final Card blocker) {
-        this.blockers.computeIfAbsent(blocked, __ -> new LinkedList<>())
+        blockers.computeIfAbsent(blocked, __ -> new LinkedList<>())
                 .add(blocker);
     }
 

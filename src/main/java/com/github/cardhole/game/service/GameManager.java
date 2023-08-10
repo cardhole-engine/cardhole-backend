@@ -2,7 +2,9 @@ package com.github.cardhole.game.service;
 
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.Target;
+import com.github.cardhole.card.domain.aspect.creature.CreatureAspect;
 import com.github.cardhole.card.domain.aspect.permanent.PermanentAspect;
+import com.github.cardhole.error.domain.IllegalGameStateException;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.GameStatus;
 import com.github.cardhole.game.domain.Step;
@@ -17,6 +19,7 @@ import com.github.cardhole.mana.domain.Mana;
 import com.github.cardhole.object.domain.GameObject;
 import com.github.cardhole.player.domain.Player;
 import com.github.cardhole.random.service.RandomCalculator;
+import com.github.cardhole.step.damage.DamageGameStepProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,10 @@ public class GameManager {
 
     private final RandomCalculator randomCalculator;
     private final GameNetworkingManipulator gameNetworkingManipulator;
+
+    //TODO: Do this somehow a little better. We don't want to have every step processor here like this.
+    // Maybe collect them into a map?
+    private final DamageGameStepProcessor damageGameStepProcessor;
 
     public void startGame(final Game game) {
         /*
@@ -335,12 +342,7 @@ public class GameManager {
             case BLOCK -> {
                 broadcastDeclareBlockers(game);
             }
-            case DAMAGE -> {
-                //TODO: If attackers were blocked by more than one creature the ask the player for damage distribution, else:
-                //distributeDamageInDamageStep();
-
-                movePriority(game);
-            }
+            case DAMAGE -> damageGameStepProcessor.processStep(game);
             case END_COMBAT -> {
                 movePriority(game);
             }
@@ -381,6 +383,8 @@ public class GameManager {
      * @param game the game to upgrade the priority for
      */
     public void movePriority(final Game game) {
+        //TODO: add state based actions, like losing the game, etc (see: https://yawgatog.com/resources/magic-rules/#R704)
+
         if (game.getPriorityPlayer() != null) {
             resetWhatCanBeCastOrActivated(game.getPriorityPlayer());
         }
@@ -580,7 +584,7 @@ public class GameManager {
             game.setStackWasCleared(true);
         }
 
-        if(gameObject instanceof Card card) {
+        if (gameObject instanceof Card card) {
             gameNetworkingManipulator.broadcastCardRemovedFromStack(card);
 
             //TODO: Targetting
@@ -651,10 +655,58 @@ public class GameManager {
         gameNetworkingManipulator.broadcastCardTapped(card);
     }
 
-    public void distributeDamageInDamageStep() {
-        //TODO
+    /**
+     * Handles how a creature card deals <b>combat damage</b> to the player. If the provided card is not a creature
+     * card then an exception will be thrown because only creatures can do combat damage.
+     *
+     * @param card   the card that does the damage
+     * @param player the damaged player
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R510">120. Damage</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R1202a">120.2a. Damage may be dealt as a result of
+     * combat</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R1203a">120.3a. Damage dealt to a player by a source
+     * without infect</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R1204">120.4. Damage is processed in a four-part
+     * sequence.</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R510">510. Combat Damage Step</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R5101a">510.1a. Each attacking creature and each
+     * blocking creature assigns combat damage equal to its power</a>
+     */
+    public void dealCombatDamageToPlayer(final Card card, final Player player) {
+        if (!card.hasAspect(CreatureAspect.class)) {
+            throw new IllegalGameStateException("Only creature cards can deal combat damage!", card);
+        }
 
-        // Get attackers who were not blocked and do damage to the players
-        // Do damage to the cards, destroy the ones that were killed
+        final int creaturePower = card.getAspect(CreatureAspect.class).getPower();
+
+        /*
+         * 510.1a. states that "Creatures that would assign 0 or less damage this way don't assign combat damage
+         * at all.".
+         */
+        if (creaturePower > 0) {
+            //TODO: Trigger abilities that has on-damage triggers
+
+            playerLoseLife(player, creaturePower);
+        }
+    }
+
+    /**
+     * The provided player loose the provided amount of life. The player does not immediately loose the game if its life
+     * reaches zero because that's a state-based action, so it is checked separately.
+     *
+     * @param player     the player to lose life
+     * @param lifeToLose the amount of life lost
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R119">119. Life</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R1192">119.2. Damage dealt to a player normally causes
+     * that player to lose that much life</a>
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R1192">119.3. If an effect causes a player to gain life
+     * or lose life, that player's life total is adjusted accordingly</a>
+     */
+    public void playerLoseLife(final Player player, final int lifeToLose) {
+        player.setLife(player.getLife() - lifeToLose);
+    }
+
+    public void playerGainLife(final Player player, final int lifeToGain) {
+        //TODO
     }
 }

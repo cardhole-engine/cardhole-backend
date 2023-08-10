@@ -3,8 +3,10 @@ package com.github.cardhole.card.domain.aspect.creature;
 import com.github.cardhole.card.domain.Card;
 import com.github.cardhole.card.domain.Target;
 import com.github.cardhole.card.domain.aspect.AbstractAspect;
+import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
+@Getter
 @SuperBuilder
 public class CreatureAspect extends AbstractAspect {
 

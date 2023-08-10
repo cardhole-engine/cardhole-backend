@@ -13,7 +13,6 @@ import com.github.cardhole.session.domain.Session;
 import com.github.cardhole.zone.hand.Hand;
 import com.github.cardhole.zone.library.Library;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.EnumMap;
@@ -25,7 +24,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-@RequiredArgsConstructor
+/**
+ * Represents one of the people who are participating in a game.
+ *
+ * @see <a href="https://yawgatog.com/resources/magic-rules/#R102">102. Players</a>
+ */
 public class Player implements Entity {
 
     @Getter
@@ -45,7 +48,13 @@ public class Player implements Entity {
     @Getter
     private final ManaPool manaPool;
 
+    /**
+     * Represents the player's hitpoints in the game. If it goes to zero, the player looses.
+     *
+     * @see <a href="https://yawgatog.com/resources/magic-rules/#R119">119. Life</a>
+     */
     @Getter
+    @Setter
     private int life;
 
     @Getter
