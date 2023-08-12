@@ -20,6 +20,7 @@ public interface Card extends GameObject {
 
     Player getController();
 
+    @Override
     default Game getGame() {
         return getOwner().getGame();
     }

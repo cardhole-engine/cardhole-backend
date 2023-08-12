@@ -1,26 +1,27 @@
 package com.github.cardhole.game.networking;
 
 import com.github.cardhole.card.domain.Card;
-import com.github.cardhole.card.domain.aspect.ability.HasActivatedAbilityAspect;
 import com.github.cardhole.game.domain.Game;
 import com.github.cardhole.game.domain.Step;
-import com.github.cardhole.game.networking.battlefiled.CardEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.battlefiled.CardTappedOnBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.battlefiled.CardUntappedOnBattlefieldOutgoingMessage;
+import com.github.cardhole.game.networking.battlefiled.GameObjectEnterToBattlefieldOutgoingMessage;
 import com.github.cardhole.game.networking.deck.domain.DeckSizeChangeOutgoingMessage;
-import com.github.cardhole.game.networking.hand.domain.AddCardToHandOutgoingMessage;
+import com.github.cardhole.game.networking.gameobject.GameObjectPartialOutgoingMessageFactory;
+import com.github.cardhole.game.networking.hand.domain.AddGameObjectToHandOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.HandSizeChangeOutgoingMessage;
 import com.github.cardhole.game.networking.hand.domain.RemoveCardFromHandOutgoingMessage;
 import com.github.cardhole.game.networking.log.domain.SendLogOutgoingMessage;
 import com.github.cardhole.game.networking.mana.domain.RefreshManaPoolOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ResetMessageOutgoingMessage;
 import com.github.cardhole.game.networking.message.domain.ShowSimpleGameMessageOutgoingMessage;
-import com.github.cardhole.game.networking.stack.domain.CardPutToStackOutgoingMessage;
+import com.github.cardhole.game.networking.stack.domain.GameObjectPutToStackOutgoingMessage;
 import com.github.cardhole.game.networking.stack.domain.CardRemovedFromStackOutgoingMessage;
 import com.github.cardhole.game.networking.step.StepChangeOutgoingMessage;
 import com.github.cardhole.game.networking.stop.domain.RefreshStopsOutgoingMessage;
 import com.github.cardhole.mana.domain.ManaPool;
 import com.github.cardhole.networking.domain.Message;
+import com.github.cardhole.object.domain.GameObject;
 import com.github.cardhole.player.domain.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class GameNetworkingManipulator {
+
+    private final GameObjectPartialOutgoingMessageFactory gameObjectPartialOutgoingMessageFactory;
 
     public void sendMessageToPlayer(final Player player, final Message message) {
         player.getSession().sendMessage(message);
@@ -94,13 +97,10 @@ public class GameNetworkingManipulator {
                 .forEach(session -> session.sendMessage(message));
     }
 
-    public void sendNewCardToPlayerHand(final Player player, final Card card) {
+    public void sendGameObjectToPlayerHand(final Player player, final GameObject gameObject) {
         player.getSession().sendMessage(
-                AddCardToHandOutgoingMessage.builder()
-                        .id(card.getId())
-                        .name(card.getName())
-                        .set(card.getSet().name())
-                        .setId(card.getSetId())
+                AddGameObjectToHandOutgoingMessage.builder()
+                        .gameObject(gameObjectPartialOutgoingMessageFactory.newPartialMessage(gameObject))
                         .build()
         );
     }
@@ -149,22 +149,10 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardEnterToBattlefield(final Card card) {
-        sendMessageToEveryone(card.getGame(),
-                CardEnterToBattlefieldOutgoingMessage.builder()
-                        .id(card.getId())
-                        .name(card.getName())
-                        .ownerId(card.getController().getId())
-                        .set(card.getSet().name())
-                        .setId(card.getSetId())
-                        .activatedAbilities(card.getAspects(HasActivatedAbilityAspect.class).stream()
-                                .map(HasActivatedAbilityAspect::getActivatedAbility)
-                                .map(ability -> CardEnterToBattlefieldOutgoingMessage.ActivatedActivity.builder()
-                                        .id(ability.getId())
-                                        .build()
-                                )
-                                .toList()
-                        )
+    public void broadcastGameObjectEnterToBattlefield(final GameObject gameObject) {
+        sendMessageToEveryone(gameObject.getGame(),
+                GameObjectEnterToBattlefieldOutgoingMessage.builder()
+                        .gameObject(gameObjectPartialOutgoingMessageFactory.newPartialMessage(gameObject))
                         .build()
         );
     }
@@ -210,23 +198,18 @@ public class GameNetworkingManipulator {
         );
     }
 
-    public void broadcastCardPutToStack(final Card card) {
-        sendMessageToEveryone(card.getGame(),
-                CardPutToStackOutgoingMessage.builder()
-                        .id(card.getId())
-                        .name(card.getName())
-                        .ownerId(card.getController().getId())
-                        .set(card.getSet().name())
-                        .setId(card.getSetId())
+    public void broadcastGameObjectPutToStack(final GameObject gameObject) {
+        sendMessageToEveryone(gameObject.getGame(),
+                GameObjectPutToStackOutgoingMessage.builder()
+                        .gameObject(gameObjectPartialOutgoingMessageFactory.newPartialMessage(gameObject))
                         .build()
         );
     }
 
-    //TODO: Remove game object, not a card!
-    public void broadcastCardRemovedFromStack(final Card card) {
-        sendMessageToEveryone(card.getGame(),
+    public void broadcastGameObjectRemovedFromStack(final GameObject gameObject) {
+        sendMessageToEveryone(gameObject.getGame(),
                 CardRemovedFromStackOutgoingMessage.builder()
-                        .id(card.getId())
+                        .id(gameObject.getId())
                         .build()
         );
     }

@@ -1,6 +1,7 @@
 package com.github.cardhole.object.domain;
 
 import com.github.cardhole.entity.domain.Entity;
+import com.github.cardhole.game.domain.Game;
 
 /*
  * 109. Objects
@@ -44,4 +45,6 @@ import com.github.cardhole.entity.domain.Entity;
  *         triggered ability, see rules 603.7d–f.
  */
 public interface GameObject extends Entity {
+    
+    Game getGame();
 }

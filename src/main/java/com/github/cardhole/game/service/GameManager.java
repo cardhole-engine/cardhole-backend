@@ -89,7 +89,7 @@ public class GameManager {
         final List<Card> drawnCard = player.drawCards(amount);
 
         drawnCard.forEach(card -> gameNetworkingManipulator
-                .sendNewCardToPlayerHand(player, card));
+                .sendGameObjectToPlayerHand(player, card));
 
         gameNetworkingManipulator.broadcastLogMessage(player.getGame(), "Player " + player.getName() + " drawn "
                 + amount + " cards.");
@@ -573,7 +573,7 @@ public class GameManager {
 
         game.getStack().enterZone(card);
 
-        gameNetworkingManipulator.broadcastCardPutToStack(card);
+        gameNetworkingManipulator.broadcastGameObjectPutToStack(card);
     }
 
     public void removeCardFromStack(final Game game) {
@@ -585,7 +585,7 @@ public class GameManager {
         }
 
         if (gameObject instanceof Card card) {
-            gameNetworkingManipulator.broadcastCardRemovedFromStack(card);
+            gameNetworkingManipulator.broadcastGameObjectRemovedFromStack(card);
 
             //TODO: Targetting
             card.resolve(null);
@@ -623,7 +623,7 @@ public class GameManager {
 
         card.getGame().putCardToBattlefield(card);
 
-        gameNetworkingManipulator.broadcastCardEnterToBattlefield(card);
+        gameNetworkingManipulator.broadcastGameObjectEnterToBattlefield(card);
 
         refreshWhatCanBeCastOrActivated(controller);
     }
